@@ -1,0 +1,13 @@
+[mysql]
+host =
+user =
+dbname =
+password =
+
+[load_balancer]
+dir = /var/run/judex
+pid_file = /var/run/judex/judex.pid
+main_pipe = /var/run/judex/judex.pipe
+
+[log]
+path =
