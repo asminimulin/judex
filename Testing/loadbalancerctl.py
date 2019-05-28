@@ -42,7 +42,7 @@ def start():
                             ['python3', os.path.join(JUDEX_HOME, 'Testing', 'loadbalancer.py')],
                             stderr=open(os.path.join(JUDEX_HOME, 'Testing', 'loadbalancer.error'), 'w'),
                             stdout=open(os.path.join(JUDEX_HOME, 'Testing', 'loadbalancer.output'), 'w'),
-                            close_fds=True)
+                            )
         time.sleep(2)
         conn = connector.ParentConnector(config['out_pipe'], config['in_pipe'])
         with open(config['pid_file'], 'w') as pid_file:
