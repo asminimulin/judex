@@ -7,7 +7,15 @@ password =
 [load_balancer]
 dir = /var/run/judex
 pid_file = /var/run/judex/judex.pid
-main_pipe = /var/run/judex/judex.pipe
+in_pipe = /var/run/judex/in.pipe
+out_pipe = /var/run/judex/out.pipe
 
 [log]
 path =
+
+[testing]
+submissions_dir =
+testers_dir =
+
+[archive]
+archive_dir =
