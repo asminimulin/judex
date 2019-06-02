@@ -36,6 +36,12 @@ class LoadBalancer:
         self.connector = connector.ChildConnector(self.config['load_balancer']['in_pipe'], self.config['load_balancer']['out_pipe'])
         self.logger.write('LoadBalancer created with {} testers'.format(testers_count))
 
+    def stop(self):
+        for conn in self.testers:
+            conn.send_message('stop')
+            print('send message stop')
+        exit(0)
+
     def has_submission(self):
         cursor = self.db_connector.cursor()
         sql = 'SELECT COUNT(*) FROM queue'
@@ -71,8 +77,11 @@ class LoadBalancer:
                 time.sleep(LOAD_BALANCER_SYNC_NON_BLOCKING_DELAY)
 
     def process_command(self, command):
+        self.logger.write('Command processing. Command=<' + command + '>')
         if command == 'add-tester':
             pass
+        elif command == 'stop':
+            self.stop()
         else:
             self.logger.write('Unrecognized command: ' + command)
 
@@ -92,6 +101,6 @@ class LoadBalancer:
         self.testers.append(conn)
 
 if __name__ == "__main__":
-    lb = LoadBalancer()
+    lb = LoadBalancer(3)
     lb.run()
     # print('loadbalancer.py must not be called manually')

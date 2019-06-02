@@ -57,10 +57,8 @@ def stop():
     if not is_running():
         return False
     if os.path.exists(config['dir']):
-        if os.path.exists(config['pid_file']):
-            pid = open(config['pid_file'], 'r').readline()
-            os.system('kill -9 {}'.format(pid))
-            logger.write('process killed')
+        with open(os.path.join(config['dir'], 'in.pipe'), 'w') as f:
+            f.write('stop')
         shutil.rmtree(config['dir'])
         logger.write('directory cleaned up')
     return True
@@ -103,7 +101,7 @@ def on_command(argv):
         if len(argv) < 3:
             print('No message specified')
             return
-        open(config['in.pipe'], 'w').write(argv[2])
+        open(config['in_pipe'], 'w').write(argv[2])
     else:
         print('Unknow command. Usage: {} <start|stop|status>'.format(argv[0]))
 

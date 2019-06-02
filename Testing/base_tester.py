@@ -9,7 +9,6 @@ import sys
 BASE_TESTER_SYNC_NON_BLOCKING_DELAY = 0.1
 
 class BaseTester:
-    ''' Do not create instance of that class. It created only for being inherited by subclasses. '''
 
     def __init_config(self):
         ''' This function moved outside __init__ because it probably will be changed dramatically in further '''
@@ -41,13 +40,15 @@ class BaseTester:
                 time.sleep(BASE_TESTER_SYNC_NON_BLOCKING_DELAY)
 
     def process_message(self, message):
+        self.logger.write('Message processing. Message=<' + message + '>')
+        print('Message processing. Message=<' + message + '>')
         argv = message.split()
         if argv[0] == 'test':
             if len(argv) < 3:
                 self.logger.write('Error occured. Command test must have at least 2 arguments')
                 return False
             self.test(argv[1], argv[2])
-        elif argv[0] == 'exit':
+        elif argv[0] == 'stop':
             exit(0)
         else:
             self.logger.write('Unknown command: ' + argv[0])
