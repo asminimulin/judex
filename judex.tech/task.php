@@ -66,7 +66,7 @@ include "views/navbar.php";
 
     <h2>Задание</h2>
     <?php
-        $cond = $mainObj["conditions"];
+        $cond = $mainObj["statement_text"];
         echo "<p class='taskText'>$cond</p>";
         ?>
     <div class="tableContainer">
@@ -90,7 +90,11 @@ include "views/navbar.php";
         <?php
 
             foreach ($mainObj["examples"] as $val){
-                $str = "<tr class='exampleDataTr'><td class='exampleDataTd'><pre   style='background-color: white;' ><code class='language-none'><xmp>".$val["in"]."</xmp></code></pre></td><td class='exampleDataTd'><pre style='background-color: white;'   ><code class='language-none'><xmp>".$val["out"]."</xmp></code></pre></td></tr>";
+
+                $tmpExample["in"] = file_get_contents("../Archive/$taskId/tests/$val");
+                $tmpExample["out"] = file_get_contents("../Archive/$taskId/answers/$val");
+                
+                $str = "<tr class='exampleDataTr'><td class='exampleDataTd'><pre   style='background-color: white;' ><code class='language-none'><xmp>".$tmpExample["in"]."</xmp></code></pre></td><td class='exampleDataTd'><pre style='background-color: white;'   ><code class='language-none'><xmp>".$tmpExample["out"]."</xmp></code></pre></td></tr>";
                 echo $str;
                 //$str = "<tr class='exampleDataTr'><td style='padding: 0;'><pre style='background-color: white; margin: 0; padding:1.4em;' class='exampleDataTd' ><code class='language-none'><xmp>".$val["in"]."</xmp></code></pre></td><td style='padding: 0;'><pre style='background-color: white; margin: 0; padding: 1.4em' class='exampleDataTd' ><code class='language-none'><xmp>".$val["out"]."</xmp></code></pre></td></tr>";
             }
