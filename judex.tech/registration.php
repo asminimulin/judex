@@ -1,8 +1,7 @@
 <?php
 include "functions.php";
     function get_dbconnection() {
-        $path = getenv("JUDGE_ROOT") . "/conf.d/database.conf";
-        $dbinfo = parse_config(getenv("JUDGE_ROOT") . "/conf.d/database.conf");
+        $dbinfo = parse_config("../conf.d/database.conf");
         $result = mysqli_connect($dbinfo["host"], $dbinfo["username"], $dbinfo["password"], $dbinfo["dbname"]);
         if(!$result) {
             $strErr = "[".date("Y-m-d H:i:s")."] ERROR : Can't connect to DB on page ".$_SERVER['REQUEST_URI']."\n";
@@ -22,7 +21,8 @@ include "functions.php";
         $password = $_POST["password"];
         $repeat_password = $_POST["repeat_password"];
         $email = $_POST["email"];
-        $name = $_POST['name'];
+        $first_name = $_POST['first_name'];
+        $last_name = $_POST["last_name"];
         $capchaResponse = $_POST['g-recaptcha-response'];
         if (!$capchaResponse){
             $message = "Пройдите reCAPTCHA";
@@ -50,8 +50,11 @@ include "functions.php";
         } else if(!preg_match("/[a-zA-Z0-9\.]+@[a-zA-Z0-0]+.[a-zA-Z]+/", $email) || strlen($email) > 50 ) {
             $message = "Некорректный email";
             goto flag;
-        } else if (!preg_match("/[a-zA-Zа-яА-Я-]+ [a-zA-Zа-яА-Я-]+/",$name) || strlen($name) > 50){
+        } else if (!preg_match("/[a-zA-Zа-яА-Я-]+/",$first_name) || strlen($first_name) > 50){
             $message = "Некорректное имя";
+            goto flag;
+        } else if (!preg_match("/[a-zA-Zа-яА-Я-]+/",$last_name) || strlen($last_name) > 50){
+            $message = "Некорректная фамилия";
             goto flag;
         } else if ($password != $repeat_password) {
             $message = "Пароли не совпадают";
@@ -83,7 +86,7 @@ include "functions.php";
 
         flag:
         if ($message == "") {
-            $query = "INSERT INTO users(login, password, email, name) VALUES('$login', MD5('$password'), '$email', '$name')";
+            $query = "INSERT INTO users(login, password, email, first_name, last_name) VALUES('$login', MD5('$password'), '$email', '$first_name', '$last_name')";
             if (!mysqli_query($link, $query)) {
                 echo mysqli_error($link) . "\n";
                 die("Cannot insert new user to database: $query");
@@ -115,7 +118,8 @@ include "functions.php";
                 <label class="authLabel">Регистрация</label>
                 <input class="authInput" type="text" pattern="[a-zA-Z0-9_.]{4,50}" name="login" required autofocus id="login" title="[a-zA-Z0-9_.]: 4-50 символов" placeholder="Логин" <?php  echo "value='".$login."'"?>>
                 <input class="authInput" type="email"  pattern="[a-zA-Z0-9\.]+@[a-zA-Z0-0]+.[a-zA-Z]+" required name="email" id="email" title="example@mail.dev" placeholder="Email" <?php  echo "value='$email'"?>>
-                <input class="authInput" type="text" pattern="[a-zA-Zа-яА-Я-]+ [a-zA-Zа-яА-Я-]+" required name="name" id="name" title="Иван Иванов"  placeholder="Имя фамилия" <?php  echo "value='$name'"?>>
+                <input class="authInput" type="text" pattern="[a-zA-Zа-яА-Я-]+" required name="first_name" id="first_name" title="[a-zA-Zа-яА-Я-]: 1-50 символов"  placeholder="Имя" <?php  echo "value='$first_name'"?>>
+                <input class="authInput" type="text" pattern="[a-zA-Zа-яА-Я-]+" required name="last_name" id="last_name" title="[a-zA-Zа-яА-Я-]: 1-50 символов"  placeholder="Фамилия" <?php  echo "value='$last_name'"?>>
                 <input class="authInput" type="password" pattern="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]{6,50}"  required name="password" id="password" title="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]: 6-50 символов"  placeholder="Пароль">
                 <input class="authInput" type="password" pattern="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]{6,50}"  required name="repeat_password" id="repeat_password"  title="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]: 6-50 символов"  placeholder="Повторите пароль">
                 <div class = "g-recaptcha" data-sitekey = "6LeLap0UAAAAAOPK8DYOXpSsrNAS8tk9mAK6sDpu" ></div>
