@@ -1,7 +1,7 @@
 [mysql]
-host =
+host = judex.tech
 user =
-dbname =
+dbname = judex
 password =
 
 [load_balancer]
@@ -11,11 +11,12 @@ in_pipe = /var/run/judex/in.pipe
 out_pipe = /var/run/judex/out.pipe
 
 [log]
-path =
+path = /var/log/judex.log
 
 [testing]
 submissions_dir =
-testers_dir =
+testers_dir = /var/run/judex/testers
+
 
 [archive]
 archive_dir =
