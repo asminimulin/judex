@@ -9,7 +9,7 @@ $link = connect_to_db();
         $row = mysqli_fetch_row($result);
         if ($row){
           $authBool = true;
-            header("Location:  http://judex.tech/");
+            header("Location:  /");
         }  else {
             setcookie("token","",time()-5);
             $authBool = false;
@@ -43,7 +43,7 @@ if (isset($_POST['submit'])){
                 setcookie("logoutFrom" ," " , time()-5);
                 header("Location: $tmpUrl");
             } else {
-                header("Location:  http://judex.tech/");
+                header("Location:  /");
             }
         } else {
             $errorText = "Неверный логин или пароль";

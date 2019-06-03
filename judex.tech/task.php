@@ -3,7 +3,7 @@
 if (isset($_GET['id'])){
     $taskId = $_GET['id'];
     if (!file_exists("../Archive/$taskId") || $taskId <= 0){
-        header("Location: http://judex.tech/404.php");
+        header("Location: /404.php");
     } else {
         $jsonText = file_get_contents("../Archive/$taskId/statement.json");
         $mainObj = json_decode($jsonText, true);

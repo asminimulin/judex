@@ -26,7 +26,7 @@
 
 
         ?></h3>
-    <input type="button" value="Выйти" class="btn red small" onclick="location = 'logout.php'">
+    <input type="button" value="Выйти" class="btn red small" onclick="location = '/logout.php'">
 </center>
 
 </body>

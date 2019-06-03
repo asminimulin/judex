@@ -11,7 +11,7 @@ $result = mysqli_query($link, $query);
 $row = mysqli_fetch_row($result);
 mysqli_free_result($result);
 if (!$row){
-    header("Location: http://80.93.182.97/404.php");
+    header("Location: /404.php");
 } else {
     $certainTask = true;
     $taskName = $row[0];
@@ -20,7 +20,7 @@ if (!$row){
     $row2 = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
     if (!$row2){
-        header("Location: http://80.93.182.97/submissions.php");
+        header("Location: /submissions.php");
     }
 }
 }
