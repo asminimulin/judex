@@ -11,10 +11,10 @@ if (isset($_GET['id'])){
     $viewUserObj = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
     if (!$viewUserObj){
-        header("Location: /404.php#kek");
+        header("Location: /404.php");
     }
 } else {
-    header("Location: /404.php#lol");
+    header("Location: /404.php");
 }
 
 
