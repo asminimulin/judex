@@ -3,5 +3,5 @@
     "name": "A+B",
     "statement_text":"На вход подаются два числа A и B (-10^9 <= A, B <= 10^9). Выведите сумму чисел A и B.",
     "comments": "",
-    "expamles" : [1, 2]
+    "examples" : [1, 2]
 }
