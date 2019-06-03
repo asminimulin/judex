@@ -15,10 +15,10 @@ if (isset($_GET["submission_id"])){
         $taskId = $row['problem_id'];
         $taskName = mysqli_fetch_assoc(mysqli_query($link, "select name from archive where id=$taskId"))['name'];
     } else {
-        header("Location: http://judex.tech/404.php");
+        header("Location: /404.php");
     }
 } else {
-    header("Location: http://judex.tech/404.php");
+    header("Location: /404.php");
 }
 ?>
 <html>

@@ -18,7 +18,7 @@ if (isset($_GET['tag_id'])){
     $problemsArr = mysqli_fetch_all($result,MYSQLI_ASSOC);
     mysqli_free_result($result);
     if (!$problemsArr){
-        header("Location: http://judex.tech/archive.php");
+        header("Location: /archive.php");
     }
     $query = "select problem_id from problem_tags where tag_id= '$tagId' order by problem_id limit ". (($pageNumber - 1+1) * $elemOnPage) . ", $elemOnPage";
     $result = mysqli_query($link,$query);

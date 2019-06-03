@@ -21,7 +21,7 @@ if (mysqli_connect_errno()){
     $file = fopen("../logs/main.log","a");
     fwrite($file,$strErr);
     fclose($file);
-    header("Location: http://judex.tech/login.php");
+    header("Location: /login.php");
 }
 
 //*****************************************************************
