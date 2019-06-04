@@ -1,0 +1,14 @@
+{
+    "input": "stdin",
+    "output": "stdout",
+    "memory": 64,
+    "time": 0.25,
+    "groups": [
+        {
+            "required": [],
+            "tests_count": 10,
+            "cost": 10,
+            "assesment": "by_test"
+        }
+    ]
+}

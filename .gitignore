@@ -1,4 +1,6 @@
 .vscode/
 conf.d/judex.conf
 Testing/__pycache__/
-Testing/log
+Testing/debug-logs
+Archive/
+Submissions/

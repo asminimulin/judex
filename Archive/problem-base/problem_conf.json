@@ -1,0 +1,20 @@
+{
+    "input": "stdin|<filename>",
+    "output": "stdout|<filename>",
+    "memory": 0,
+    "time": 0,
+    "groups": [
+        {
+            "required": [],
+            "tests_count": 0,
+            "cost": 0,
+            "assesment": "full|by_test"
+        },
+        {
+            "required": [1],
+            "tests_count": 0,
+            "cost": 0,
+            "assesment": "full|by_test"
+        }
+    ]
+}
