@@ -2,27 +2,28 @@
 
 include "standart.php";
 
+$JUDEX_HOME = getenv('JUDEX_HOME');
+
 function upload($submission_id, $language) {
-    global $path_to_judge_root;
+    global $JUDEX_HOME;
+    $submission_dir = $JUDEX_HOME . '/' . "Submissions" . '/' . "$submission_id";
+    mkdir($submission_dir, 0777, TRUE);	
 
-    $language = strtolower($language);
-	$path_to_dir = $path_to_judge_root . '/' . "Submissions" . '/' . $submission_id;
-	mkdir($path_to_dir, 0777, TRUE);	
+    $output_dir = $submission_dir . '/' . "output";
+    mkdir($output_dir, 0777, TRUE);
 
-    $path_to_file = $path_to_dir . '/' . "result.json";
+    $result_file = $submission_dir . '/' . "result.json";
     $submission_result = array();
     $submission_result["status"] = "IQ";
-    $fp = fopen($path_to_file, 'w');
+    $fp = fopen($submission_result, 'w');
     fwrite($fp, '{"status": "IQ"}');
     fclose($fp);
-    chmod($path_to_dir, 0777);
-    chmod($path_to_file, 0777);
-	
-    $lang_conf = json_decode(file_get_contents(getenv("JUDGE_ROOT")."/conf.d/language.conf"), true);
-    echo getenv("JUDGE_ROOT")."/conf.d/language.conf";
-    $uploaded = move_uploaded_file($_FILES['uploading_file']['tmp_name'], $path_to_dir . '/' . "code" . $lang_conf[$language]["extension"]);
+    chmod($submission_dir, 0777);
+    chmod($result_file, 0777);
+    $lang_conf = parse_ini_file($JUDEX_HOME."/conf.d/language.conf", true);
+    $uploaded = move_uploaded_file($_FILES['uploading_file']['tmp_name'], $submission_dir . '/' . "$submission_id" . $lang_conf[$language]["extension"]);
 
-    chmod($path_to_dir . '/' . "code" . $lang_conf[$language]["extension"], 0777);
+    chmod($submission_dir . '/' . "$submission_id" . $lang_conf[$language]["extension"], 0777);
     return $uploaded;
 }
 
@@ -70,7 +71,7 @@ function submit() {
     $inserted = mysqli_query($link, $sql);
     if(!$inserted) {
         die(mysqli_error($link));
-    }
+    } 
 
     setcookie("submission_id", $submission_id, time() + 100);
     header("Location: /task.php?id=$problem_id");
