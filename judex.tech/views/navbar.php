@@ -1,4 +1,5 @@
 <meta name="viewport" content="initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no, width = device-width" />
+<meta charset="UTF-8">
 <ul class="topnav">
     <li><a class="active" href="/">Главная</a></li>
     <li><a href="/archive.php">Архив</a></li>
