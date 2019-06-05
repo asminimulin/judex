@@ -6,6 +6,8 @@ import json
 from common import *
 import configparser
 import os
+from submission_verdict import Verdict
+import psutil
 
 class SubmissionRunner:
 
@@ -39,109 +41,103 @@ class SubmissionRunner:
 
     def __check_test(self, test_number):
         print('Check test #{}'.format(test_number))
+
         test_input = os.path.join(self.problem_path, 'tests', '{}'.format(test_number))
         user_output = os.path.join(self.submission_path, 'output', '{}'.format(test_number))
         correct_output = os.path.join(self.problem_path, 'answers', '{}'.format(test_number))
+
         test_passed = False
+        user_process_memory = 0
+        execution_memory = 0
+        execution_time = 0.000
+        
         run_array = None
         if self.lang_conf[self.language]['type'] == 'compiled':
             run_array = [self.exe_path]
         user_process = subprocess.Popen(run_array,
                                         stdin=open(test_input, 'r'),
-                                        stdout=open(user_output, 'w'),
-        )
-        user_process_memory = 0
-        time_of_execution = 0.000
+                                        stdout=open(user_output, 'w'))
+
+        start_time = time.time()
+
         try:
-            start_time = time.time()
             user_process.wait(self.time_limit)
-            time_of_execution = round(time.time() - start_time, 3)
-            verdict = ';{};{}'.format(time_of_execution, min(user_process_memory, self.memory_limit))
+            execution_time = round(time.time() - start_time, 3)
+
             if user_process.returncode != 0:
-                verdict = 'RE' + verdict
+                return (False, Verdict.Status.STATUS_RE, execution_time, execution_memory)
+
             if user_process_memory > self.memory_limit:
-                user_process_memory = self.memory_limit
-                verdict = 'ML;{};{}'.format(time_of_execution, self.memory_limit)
+                return (False, Veridct.Status.STATUS_MLE, execution_time, execution_memory)
         except subprocess.TimeoutExpired:
-            time_of_execution = self.time_limit
-            user_process_memory = self.memory_limit
-            verdict = 'TL;{};{}'.format(self.time_limit, user_process_memory)
+            print('TL caught')
+            execution_time = self.time_limit
+
             main_process = psutil.Process(user_process.pid)
             for child in main_process.children(recursive=True):
                 child.kill()
             main_process.kill()
+
+            return (False, Verdict.Status.STATUS_TLE, execution_time, execution_memory)
         except MemoryError:
             user_process_memory = self.memory_limit
-            verdict = 'ML;{};{}'.format(time_of_execution, self.memory_limit)
+            return (False, Verdict.Status.STATUS_MLE, execution_time, execution_memory)
         except:
-            verdict = 'NLSP;42;42'
+            return (False, Verdict.Status.STATUS_SV, execution_time, execution_memory)
 
-        if verdict[0] != ';':
-            self.result['tests'].append(verdict)
+        checker_process = subprocess.Popen([os.path.join(self.problem_path, 'checker'),
+                                            test_input, user_output, correct_output])
+        checker_process.wait()
+
+        verdict_status = None
+        test_passed = None
+
+        if checker_process.returncode != 0:
+            verdict_status = Verdict.Status.STATUS_WA
+            test_passed = False
         else:
-            checker_process = subprocess.Popen([os.path.join(self.problem_path, 'checker'),
-                                                test_input, user_output, correct_output])
-            checker_process.wait()
-            if checker_process.returncode != 0:
-                verdict = 'WA' + verdict
-                self.result['tests'].append(verdict)
-            else:
-                verdict = 'OK' + verdict
-                self.result['tests'].append(verdict)
-                test_passed = True
-        '''#self.max_memory = max(min(user_process_memory, self.memory_limit), self.max_memory)
-        self.max_time = max(min(time_of_execution, self.time_limit), self.max_time)
-        #self.average_memory += min(user_process_memory, self.memory_limit)
-        self.average_time += min(time_of_execution, self.time_limit)
-        '''
-        self.max_memory = 0
-        self.average_memory = 0
-        self.max_time = 0
-        self.average_time = 0
-        ret = (test_passed, verdict)
-        return ret
+            verdict_status = Verdict.Status.STATUS_OK
+            test_passed = True
 
-    # Check group of test
-    def __check_group(self, first_test_number, group):
+        return (test_passed, verdict_status, execution_time, execution_memory)
+
+    # Check tests_group
+    def __check_group(self, first_test_number, group, verdict):
         is_group_available = True
         for req_grp in group['required']:
             if not self.passed_groups[req_grp - 1]:
                 is_group_available = False
                 break
-        tests_amount = group['tests_count']
+        tests_count = group['tests_count']
+        last_test = first_test_number + tests_count - 1
         if not is_group_available:
-            self.result['tests'] += ['IGN;0;0'] * tests_amount
-            return 0
-        passed_tests_amount = 0
-        for test_number in range(first_test_number, first_test_number + tests_amount):
-            current_result = self.__check_test(test_number)
-            test_passed = current_result[0]
+            verdict.add_test(Verdict.Status.STATUS_IGN, 0, 0, count=tests_count)
+            return test_count
+        full_passed = True
+        for test_number in range(first_test_number, last_test + 1):
+            test_passed, execution_status, execution_time, execution_memory = \
+                                                                self.__check_test(test_number)
             if test_passed:
-                passed_tests_amount += 1
-                self.result['tests_passed'] += 1
+                verdict.add_test(execution_status, execution_time, execution_memory)
+                print('test #{} passed scoring'.format(test_number))
                 if group['assesment'] == 'by_test':
-                    self.result['sum'] += group['cost']
-            self.result['status'] = "RUN " + str(test_number)
-            with open(self.result_file, 'w') as f:
-                json.dump(self.result, f)
-                if not test_passed and group['assesment'] == 'full':
-                    self.result['status'] = current_result[1].split(';')[0]
-                    self.result['tests'] += \
-                        ['IGN;0;0'] * (first_test_number + tests_amount - test_number - 1)
-                    json.dump(self.result, f)
-                    break
+                    verdict.score(group['cost'])
+            else:
+                full_passed = False
+                verdict.add_test(execution_status, execution_time, execution_memory)
+                verdict.add_test(Verdict.Status.STATUS_IGN, 0, 0, last_test - test_number)
+                break
 
-        if passed_tests_amount == tests_amount:
+        if full_passed:
             self.passed_groups.append(True)
+            if group['assesment'] == 'full':
+                verdict.score(group['score'])
         else:
             self.passed_groups.append(False)
-        return tests_amount
+        return tests_count
 
     def check_submission(self, submission_id, problem_id, language):
-        self.result = {}
-        self.result['tests'] = []
-        self.result['tests_passed'] = 0
-        self.result['sum'] = 0
+        self.total_tests_passed = 0
         submission_path = os.path.join(self.submissions, str(submission_id))
         if not os.path.exists(submission_path) or not os.path.isdir(submission_path):
             raise Exception('Bad submission id')
@@ -158,14 +154,15 @@ class SubmissionRunner:
         self.language = language
         self.submission_path = submission_path
         self.problem_path = problem_path
-        self.result_file = os.path.join(self.submission_path, 'result.json')
+        result_file = os.path.join(self.submission_path, 'result.json')
+        verdict = Verdict(result_file)
       
         self.__load_problem_conf()
         self.time_limit = self.problem_conf['time']
         self.memory_limit = self.problem_conf['memory']
 
-        print(self.time_limit)
-        print(self.memory_limit)
+        print('time limit = {}s'.format(self.time_limit))
+        print('memory limit = {}B'.format(self.memory_limit))
         
         self.code_path = os.path.join(submission_path, '{}{}'.format(submission_id, self.lang_conf[self.language]['extension']))
         self.exe_path = None
@@ -174,6 +171,7 @@ class SubmissionRunner:
             self.exe_path = os.path.join(submission_path, '{}'.format(submission_id))
             self.log_path = os.path.join(submission_path, 'log')
             if not self.__compile():
+                verdict.set_status(Verdict.Status.STATUS_CE)
                 return
         else:
             self.exe_path = code_path
@@ -183,7 +181,14 @@ class SubmissionRunner:
         self.passed_groups = [0] 
         first_test = 1
         for group in problem_conf['groups']:
-            first_test += self.__check_group(first_test, group)
+            first_test += self.__check_group(first_test, group, verdict)
+
+        if verdict.sum == 100:
+            verdict.set_status(Verdict.Status.STATUS_OK)
+        elif verdict.sum > 0:
+            verdict.set_status(Verdict.Status.STATUS_PS)
+        else:
+            verdict.set_status(Verdict.Status.STATUS_LOOSER)
 
 if __name__ == '__main__':
     runner = SolutionRunner('/tmp/judex')
