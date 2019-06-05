@@ -29,6 +29,7 @@ class Verdict():
         self.average_time = 0
         self.average_memory = 0
         self.sum = 0
+        self.tests_passed = 0
         self.dump()
 
     def set_status(self, status_type):
@@ -41,6 +42,8 @@ class Verdict():
         status = self.Status(status_type)
         self.max_time = max(self.max_time, time)
         self.max_memory = max(self.max_memory, memory)
+        if status is self.Status.STATUS_OK:
+            self.tests_passed += count
         if status is not self.Status.STATUS_IGN:
             self.time_sum = round(count * time + self.time_sum, 3)
             self.memory_sum += count * memory
