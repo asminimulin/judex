@@ -4,7 +4,7 @@ user =
 dbname = judex
 password =
 
-[load_balancer]
+[loadbalancer]
 dir = /var/run/judex
 pid_file = /var/run/judex/judex.pid
 in_pipe = /var/run/judex/in.pipe
@@ -14,9 +14,9 @@ out_pipe = /var/run/judex/out.pipe
 path = /var/log/judex.log
 
 [testing]
-submissions_dir =
+submissions_dir = /srv/judex/Submissions
 testers_dir = /var/run/judex/testers
 
 
 [archive]
-archive_dir =
+archive_dir = /srv/judex/Problems
