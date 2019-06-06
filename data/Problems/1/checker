@@ -1,0 +1,20 @@
+#!/usr/bin/python3
+import sys
+
+_input = sys.argv[1]
+_output = sys.argv[2]
+_correct = sys.argv[3]
+
+finput = open(_input, 'r')
+foutput = open(_output, 'r')
+
+a, b = [int(t) for t in finput.readline().split()]
+
+c = int(foutput.readline())
+
+if a + b == c:
+    print('Correct')
+    exit(0)
+else:
+    print('Incorrect')
+    exit(1)

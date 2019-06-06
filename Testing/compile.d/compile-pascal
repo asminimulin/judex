@@ -1,0 +1,17 @@
+#!/bin/bash
+
+work_dir=$(pwd)
+
+if [[ "$1" == /* ]]; then
+    in="$1"
+else
+    in="$work_dir/$1"
+fi
+
+if [[ "$2" == /* ]]; then
+    out="$2"
+else
+    out="$work_dir/$2"
+fi
+
+fpc "-o$out" "$in"
