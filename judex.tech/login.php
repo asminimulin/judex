@@ -19,10 +19,10 @@ $link = connect_to_db();
     }
 
 if (isset($_POST['submit'])){
-        $login = $_POST["login"];
+        $loginOrEmail = $_POST["loginOrEmail"];
         $password = $_POST["password"];
 
-        $query = "select id from users where login='".$login."' and password='".MD5($password)."'";
+        $query = "select id from users where login='".$loginOrEmail."' and password='".MD5($password)."'";
         $result = mysqli_query($link,$query);
         $row = mysqli_fetch_row($result);
         if ($row){
@@ -46,7 +46,32 @@ if (isset($_POST['submit'])){
                 header("Location:  /");
             }
         } else {
-            $errorText = "Неверный логин или пароль";
+            $query = "select id from users where email='".$loginOrEmail."' and password='".MD5($password)."'";
+            $result = mysqli_query($link,$query);
+            $row = mysqli_fetch_row($result);
+            if ($row){
+                $token = "";
+                $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+                $numChars = strlen($chars);
+                for ($i = 0; $i < 32; $i++){
+                    $token.= substr($chars, rand(1,$numChars)-1, 1);
+                }
+                mysqli_free_result($result);
+                $query = "delete from auth where user_id =".$row[0];
+                mysqli_query($link,$query);
+                $query = "insert into auth (user_id, token, date) values (".$row[0].", '$token', '".date("Y-m-d H:i:s")."' )";
+                mysqli_query($link,$query);
+                setcookie("token", "".$token, time()+(86400*3), "/");
+                if ($_COOKIE["logoutFrom"]){
+                    $tmpUrl = $_COOKIE['logoutFrom'];
+                    setcookie("logoutFrom" ," " , time()-5);
+                    header("Location: $tmpUrl");
+                } else {
+                    header("Location:  /");
+                }
+            } else {
+                $errorText = "Неверный логин или пароль";
+            }
         }
 
     }
@@ -74,8 +99,8 @@ if (isset($_POST['submit'])){
 <div class="authFormDiv">
     <form class="authForm" name="loginForm" action="login.php" method="POST">
         <label class="authLabel">Вход</label>
-        <input class="authInput" type="text" <?php if($authBool) echo "disabled"?> name="login" required autofocus id="login" title="Логин" placeholder="Введите логин">
-        <input class="authInput" type="password" <?php if($authBool) echo "disabled"?> required name="password" id="password" title="Пароль"  placeholder="Введите пароль">
+        <input class="authInput" type="text" <?php if($authBool) echo "disabled"?> name="loginOrEmail" required autofocus id="login" title="Логин или Email" placeholder="Логин или Email">
+        <input class="authInput" type="password" <?php if($authBool) echo "disabled"?> required name="password" id="password" title="Пароль"  placeholder="Пароль">
         <p><?php if ($errorText) echo $errorText;?></p>
         <input class="authButton" type="submit" <?php if($authBool) echo "disabled"?> value="Войти"  name="submit" ><br>
         <span class="authChangePage">Нет аккаунта? <a href="registration.php">Зарегистрироваться!</a></span>
