@@ -6,7 +6,7 @@ if (isset($_GET['task_id'])){
     $taskId = $_GET['task_id'];
     $taskName;
 
-$query = "select name from archive where id = ".$taskId;
+$query = "select name from problems where id = ".$taskId;
 $result = mysqli_query($link, $query);
 $row = mysqli_fetch_row($result);
 mysqli_free_result($result);

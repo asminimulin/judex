@@ -13,7 +13,7 @@ if (isset($_GET["submission_id"])){
         $jsonText = file_get_contents("../Submissions/" . $submissionId . "/result.json");
         $mainObj = json_decode($jsonText, true);
         $taskId = $row['problem_id'];
-        $taskName = mysqli_fetch_assoc(mysqli_query($link, "select name from archive where id=$taskId"))['name'];
+        $taskName = mysqli_fetch_assoc(mysqli_query($link, "select name from problems where id=$taskId"))['name'];
     } else {
         header("Location: /404.php");
     }

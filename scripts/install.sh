@@ -21,6 +21,7 @@ install_packages() {
         apache2 \
         mysql-server \
         htop \
+	git
     pip3 install \
         pymysql \
         psutil
@@ -47,7 +48,7 @@ init_filesystem() {
     mkdir "$submissions"
     mkdir "$problems"
     chown --recursive $user:$user "$JUDEX_DATA"
-    chmod --recursive 774 "$judex_data"
+    chmod --recursive 774 "$JUDEX_DATA"
 }
 
 parse_arguments() {
@@ -83,8 +84,8 @@ init_environment() {
     JUDEX_DATA="/srv/judex"
 }
 
-install=0
-debug=1
+install=1
+debug=0
 user="NO_USER_CHOSEN"
 
 parse_arguments $@

@@ -25,7 +25,7 @@ include "standart.php";
     mysqli_free_result($result);
     $tmptmp = 1;
     foreach ($userArr as $tmpObj){
-        $query = "select problem_id from users_results where user_id = ".$tmpObj['id']." and solved = 1";
+        $query = "select problem_id from user_result where user_id = ".$tmpObj['id']." and solved = 1";
         $tmpResult = mysqli_query($link,$query);
         $tmpCount = mysqli_num_rows($tmpResult);
         echo "<tr ".(($tmpObj['login'] == $userLogin)?"style='background-color:lightgreen;'":"")."><td>$tmptmp</td><td><a href='user.php?id=".$tmpObj['id']."'>".$tmpObj['login']."</a></td><td>".($tmpCount?$tmpCount:"0")."</td><td>".$tmpObj['rating']."</td></tr>";
@@ -48,7 +48,7 @@ include "standart.php";
                 mysqli_free_result($result);
                 $tmptmp = 4;
                 foreach ($userArr as $tmpObj){
-                    $query = "select problem_id from users_results where user_id = ".$tmpObj['id']." and solved = 1";
+                    $query = "select problem_id from user_result where user_id = ".$tmpObj['id']." and solved = 1";
                     $tmpResult = mysqli_query($link,$query);
                     $tmpCount = mysqli_num_rows($tmpResult);
                     echo "<tr ".(($tmpObj['login'] == $userLogin)?"style='background-color:lightgreen;'":"")."><td>$tmptmp</td><td><a href='user.php?id=".$tmpObj['id']."'>".$tmpObj['login']."</a></td><td>".($tmpCount?$tmpCount:"0")."</td><td>".$tmpObj['rating']."</td></tr>";
