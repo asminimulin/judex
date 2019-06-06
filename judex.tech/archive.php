@@ -13,14 +13,14 @@ if (isset($_GET['p'])){
 if (isset($_GET['tag_id'])){
     $tagId = $_GET['tag_id'];
     $certainTag = true;
-    $query = "select problem_id from problem_tags where tag_id = '$tagId' order by problem_id limit ". (($pageNumber - 1) * $elemOnPage) . ", $elemOnPage";
+    $query = "select problem_id from problem_tag where tag_id = '$tagId' order by problem_id limit ". (($pageNumber - 1) * $elemOnPage) . ", $elemOnPage";
     $result = mysqli_query($link,$query);
     $problemsArr = mysqli_fetch_all($result,MYSQLI_ASSOC);
     mysqli_free_result($result);
     if (!$problemsArr){
         header("Location: /archive.php");
     }
-    $query = "select problem_id from problem_tags where tag_id= '$tagId' order by problem_id limit ". (($pageNumber - 1+1) * $elemOnPage) . ", $elemOnPage";
+    $query = "select problem_id from problem_tag where tag_id= '$tagId' order by problem_id limit ". (($pageNumber - 1+1) * $elemOnPage) . ", $elemOnPage";
     $result = mysqli_query($link,$query);
     $row = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
@@ -59,11 +59,11 @@ include "views/navbar.php";
             $tmp_problem_id = $val['problem_id'];
             $tmpJsonText = file_get_contents("../Archive/$tmp_problem_id/statement.json");
             $tmpMainObj = json_decode($tmpJsonText, true);
-            $query = "select name from archive where id = $tmp_problem_id";
+            $query = "select name from problems where id = $tmp_problem_id";
             $result = mysqli_query($link,$query);
             $row = mysqli_fetch_assoc($result);
             mysqli_free_result($result);
-            $query = "select solved from users_results where user_id = $userId and problem_id = $tmp_problem_id";
+            $query = "select solved from user_result where user_id = $userId and problem_id = $tmp_problem_id";
             $result = mysqli_query($link,$query);
             $row2 = mysqli_fetch_assoc($result);
             mysqli_free_result($result);
@@ -74,7 +74,7 @@ include "views/navbar.php";
               }
             }
             echo "<div class='card' ><div onclick='location = `task.php?id=".$val['problem_id']."`' class='cardHeader'><span class='cardName'>".$row['name']."</span></div><span class='cardTaskId'>ID: ".$tmp_problem_id."</span><div class='cardLimits'>T: ".$tmpMainObj['timeLimit']." с<br>M: ".$tmpMainObj['memoryLimit']." Мб</div><p class='tagList'>";
-            $query = "select tag_id from problem_tags where problem_id = $tmp_problem_id";
+            $query = "select tag_id from problem_tag where problem_id = $tmp_problem_id";
             $result = mysqli_query($link, $query);
             while ($row3 = mysqli_fetch_assoc($result)){
                 $tmp2JsonText = file_get_contents("../Tags/".$row3['tag_id']."/info.json");
@@ -86,11 +86,11 @@ include "views/navbar.php";
         }
             unset($val);
         } else {
-            $query = "select id, name from archive order by id limit " . (($pageNumber - 1) * $elemOnPage) . ", $elemOnPage";
+            $query = "select id, name from problems order by id limit " . (($pageNumber - 1) * $elemOnPage) . ", $elemOnPage";
             $result = mysqli_query($link,$query);
             $taskList  = mysqli_fetch_all($result, MYSQLI_ASSOC);
             mysqli_free_result($result);
-            $query = "select * from archive order by id limit " . (($pageNumber - 1 + 1) * $elemOnPage) . ",$elemOnPage";
+            $query = "select * from problems order by id limit " . (($pageNumber - 1 + 1) * $elemOnPage) . ",$elemOnPage";
             $result = mysqli_query($link, $query);
             $row = mysqli_fetch_assoc($result);
             mysqli_free_result($result);
@@ -101,7 +101,7 @@ include "views/navbar.php";
                 $tmpJsonText = file_get_contents("../Archive/".$val['id']."/statement.json");
                 $tmpMainObj = json_decode($tmpJsonText, true);
                 $cond = $tmpMainObj["conditions"];
-                $query = "select solved from users_results where user_id = $userId and problem_id = ".$val['id'];
+                $query = "select solved from user_result where user_id = $userId and problem_id = ".$val['id'];
                 $result = mysqli_query($link,$query);
                 $row2 = mysqli_fetch_assoc($result);
                 mysqli_free_result($result);
@@ -112,7 +112,7 @@ include "views/navbar.php";
                     }
                 }
                 echo "<div class='card'><div onclick='location=`task.php?id=".$val['id']."`' class='cardHeader'><span class='cardName'>".$val['name']."</a></div><span class='cardTaskId'>ID: ".$val['id']."</span><div class='cardLimits'>T: ".$tmpMainObj['timeLimit']." с<br>M: ".$tmpMainObj['memoryLimit']." Мб</div><p class='tagList'>";
-                $query = "select tag_id from problem_tags where problem_id = ".$val['id'];
+                $query = "select tag_id from problem_tag where problem_id = ".$val['id'];
                 $result = mysqli_query($link, $query);
                 while ($row3 = mysqli_fetch_assoc($result)){
                     $tmp2JsonText = file_get_contents("../Tags/".$row3['tag_id']."/info.json");

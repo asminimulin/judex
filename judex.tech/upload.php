@@ -25,11 +25,11 @@ if (isset($_POST['submit'])) {
         }
         else {
             exec("rm /tmp/auth_program");
-           // $insertion = mysqli_query($link, "INSERT INTO archive (name) VALUES ('$name');");
+           // $insertion = mysqli_query($link, "INSERT INTO problems (name) VALUES ('$name');");
            // if (!$insertion) {
               //  exit("Error inserting into DB");
            // }
-            $result = mysqli_query($link, "SELECT MAX(id) FROM archive;");
+            $result = mysqli_query($link, "SELECT MAX(id) FROM problems;");
             if (!$result) {
                exit("Error getting id from DB");
             }

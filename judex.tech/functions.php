@@ -56,7 +56,7 @@ function parse_config($path) {
 }
 
 function connect_to_db() {
-	$db = parse_config("../conf.d/database.conf");
+	$db = parse_config("/home/judex-master/judex/conf.d/database.conf");
 	$new_connection = mysqli_connect($db["host"], $db["username"], $db["password"], $db["dbname"]);
 	return $new_connection;
 }

@@ -14,8 +14,7 @@ $PERMISSIONS = null;
 $path_to_judge_root = getenv("JUDEX_HOME");
 $PATH_TO_JUDGE_ROOT = $path_to_judge_root;
 
-$dbinfo = parse_config($path_to_judge_root . '/' . "conf.d" . '/' . "database.conf");
-$link = mysqli_connect($dbinfo["host"], $dbinfo["username"], $dbinfo["password"], $dbinfo["dbname"]);
+$link = connect_to_db();
 if (mysqli_connect_errno()){
     $strErr = "[".date("Y-m-d H:i:s")."] ERROR : Can't connect to DB on page ".$_SERVER['REQUEST_URI']."\n";
     $file = fopen("../logs/main.log","a");

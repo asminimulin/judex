@@ -29,7 +29,7 @@ if (isset($_GET['p'])){
             $selected_user_id = null;
         }
 
-        $sql = "SELECT id, name FROM archive ORDER BY id DESC";
+        $sql = "SELECT id, name FROM problems ORDER BY id DESC";
         $response = mysqli_query($link, $sql);
         $problems = [];
         while($row = mysqli_fetch_assoc($response)) {

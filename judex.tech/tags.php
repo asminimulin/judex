@@ -5,11 +5,11 @@ $pageNumber = 1;
 if (isset($_GET['p'])){
     $pageNumber  = max(1, (int)($_GET['p']));
 }
-$query = "select tag_id from problem_tags group by tag_id limit " . (($pageNumber - 1) * $elemOnPage) . ", $elemOnPage";
+$query = "select tag_id from problem_tag group by tag_id limit " . (($pageNumber - 1) * $elemOnPage) . ", $elemOnPage";
 $result = mysqli_query($link,$query);
 $tagIdArr = mysqli_fetch_all($result, MYSQLI_ASSOC);
 mysqli_free_result($result);
-$query = "select tag_id from problem_tags group by tag_id limit " . (($pageNumber - 1+1) * $elemOnPage) . ", $elemOnPage";
+$query = "select tag_id from problem_tag group by tag_id limit " . (($pageNumber - 1+1) * $elemOnPage) . ", $elemOnPage";
 $tmpRow = mysqli_fetch_assoc(mysqli_query($link,$query));
 $nextPage = $tmpRow?true:false;
 ?>
@@ -34,13 +34,13 @@ $nextPage = $tmpRow?true:false;
         foreach ($tagIdArr as $val){
             $tmpJsonText = file_get_contents("../Tags/".$val["tag_id"]."/info.json");
             $tmpObj = json_decode($tmpJsonText, true);
-            $query = "select problem_id from problem_tags where tag_id = ".$val['tag_id']." order by problem_id";
+            $query = "select problem_id from problem_tag where tag_id = ".$val['tag_id']." order by problem_id";
             $result = mysqli_query($link,$query);
             $taskIdArr = mysqli_fetch_all($result, MYSQLI_ASSOC);
             mysqli_free_result($result);
             $cntSolvedTask = 0;
             foreach ($taskIdArr as $elem){
-                $query = "select solved from users_results where problem_id = ".$elem['problem_id']." and user_id = $userId";
+                $query = "select solved from user_result where problem_id = ".$elem['problem_id']." and user_id = $userId";
                 $result = mysqli_query($link,$query);
                 $row = mysqli_fetch_assoc($result);
                 if ($row){
