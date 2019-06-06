@@ -1,5 +1,5 @@
 <?php
-    include_once "standart.php";
+    include_once "include/standart.php";
     $elemOnPage = 10;
     $pageNumber = 1;
     $nextPage = false;
@@ -18,7 +18,7 @@ if (isset($_GET['tag_id'])){
     $problemsArr = mysqli_fetch_all($result,MYSQLI_ASSOC);
     mysqli_free_result($result);
     if (!$problemsArr){
-        header("Location: /archive.php");
+        header("Location: archive.php");
     }
     $query = "select problem_id from problem_tag where tag_id= '$tagId' order by problem_id limit ". (($pageNumber - 1+1) * $elemOnPage) . ", $elemOnPage";
     $result = mysqli_query($link,$query);
@@ -40,7 +40,7 @@ if (isset($_GET['tag_id'])){
     <style>
     </style>
 </head>
-<body background="../img/124.png">
+<body background="img/124.png">
 <?php
 include_once "views/navbar.php";
 ?>

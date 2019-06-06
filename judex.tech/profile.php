@@ -1,5 +1,5 @@
 <?php
- include_once "standart.php";
+ include_once "include/standart.php";
  $query = "select first_name, last_name from users where id = $userId";
  $result = mysqli_query($link, $query);
  $userName  = mysqli_fetch_assoc($result);

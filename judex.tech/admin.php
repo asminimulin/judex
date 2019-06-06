@@ -1,4 +1,4 @@
-<?php include_once "standart.php"; ?>
+<?php include_once "include/standart.php"; ?>
 
 <html>
     <head>

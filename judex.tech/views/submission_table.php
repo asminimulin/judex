@@ -9,7 +9,7 @@ if (isset($_GET['p'])){
 <center>
     <?php
         if(!$link) {
-            include_once "/standart.php";
+            include_once "include/standart.php";
         }
         if(!$link) {
             echo "<H1>DATABASE ERROR. RECONNECT.</H1>";

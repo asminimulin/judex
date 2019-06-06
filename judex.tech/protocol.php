@@ -1,5 +1,5 @@
 <?php
-include_once "standart.php";
+include_once "include/standart.php";
 if (isset($_GET["submission_id"])){
     $submissionId = $_GET["submission_id"];
     if ($PERMISSIONS[$PERMISSION_ID["isAdmin"]] == "1") {
@@ -15,10 +15,10 @@ if (isset($_GET["submission_id"])){
         $taskId = $row['problem_id'];
         $taskName = mysqli_fetch_assoc(mysqli_query($link, "select name from problems where id=$taskId"))['name'];
     } else {
-        header("Location: /404.php");
+        header("Location: 404.php");
     }
 } else {
-    header("Location: /404.php");
+    header("Location: 404.php");
 }
 ?>
 <html>

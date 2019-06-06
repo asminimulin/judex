@@ -1,20 +1,20 @@
 <?php
-include_once "standart.php";
+include_once "include/standart.php";
 $viewUserObj;
 if (isset($_GET['id'])){
     $viewUserId = $_GET['id'];
     if ($viewUserId == $userId){
-    header("Location: /profile.php");
+    header("Location: profile.php");
     }
     $query = "select login, first_name, last_name, rating from users where id = $viewUserId";
     $result = mysqli_query($link, $query);
     $viewUserObj = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
     if (!$viewUserObj){
-        header("Location: /404.php");
+        header("Location: 404.php");
     }
 } else {
-    header("Location: /404.php");
+    header("Location: 404.php");
 }
 
 

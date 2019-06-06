@@ -1,5 +1,5 @@
 <?php
-include_once "standart.php";
+include_once "include/standart.php";
 $elemOnPage = 12;
 $pageNumber = 1;
 if (isset($_GET['p'])){

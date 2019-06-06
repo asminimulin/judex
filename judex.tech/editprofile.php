@@ -1,5 +1,5 @@
 <?php
-include_once "standart.php";
+include_once "include/standart.php";
 
 $errorMessage = "";
 if(isset($_POST["action"])){
