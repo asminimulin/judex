@@ -165,7 +165,7 @@ mysqli_free_result($result);
 	</head>
 
 	<body background="img/124.png">
-    <?php include "views/navbar.php";?>
+    <?php include_once "views/navbar.php";?>
     <center>
 	<h1>Изменение личной информации</h1>
 

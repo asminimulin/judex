@@ -1,5 +1,5 @@
 <?php
- include "standart.php";
+ include_once "standart.php";
  $query = "select first_name, last_name from users where id = $userId";
  $result = mysqli_query($link, $query);
  $userName  = mysqli_fetch_assoc($result);
@@ -13,7 +13,7 @@
 </head>
 
 <body background="img/124.png">
-<?php include "views/navbar.php";?>
+<?php include_once "views/navbar.php";?>
 <center>
     <h1>Профиль</h1>
     <h2><?php echo $userName["first_name"]." ".$userName["last_name"] ;?></h2>

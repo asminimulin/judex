@@ -1,5 +1,5 @@
 <?php
-    include getenv("JUDGE_ROOT")."/standart.judge.com/standart.php";
+    include_once getenv("JUDGE_ROOT")."/standart.judge.com/standart.php";
     if(!$link) {
         header("Location: /404.php");
     }
@@ -62,7 +62,7 @@
     </head>
     <link rel="stylesheet" type="text/css" href="/style.css">
     <body background="/img/124.png">
-        <?php include "$PATH_TO_JUDGE_ROOT/standart.judge.com/views/navbar.php"; ?>
+        <?php include_once "$PATH_TO_JUDGE_ROOT/standart.judge.com/views/navbar.php"; ?>
         <center> 
             <H1>Создать ТЭГ</H1>
             <form id="form_create_tag" action="/need-to-fix/create.php" method="post"> 

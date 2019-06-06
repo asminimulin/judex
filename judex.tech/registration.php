@@ -1,5 +1,5 @@
 <?php
-include "functions.php";
+include_once "functions.php";
     function get_dbconnection() {
         $dbinfo = parse_config("../conf.d/database.conf");
         $result = mysqli_connect($dbinfo["host"], $dbinfo["username"], $dbinfo["password"], $dbinfo["dbname"]);

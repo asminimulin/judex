@@ -1,6 +1,6 @@
 <?php
-include "functions.php";
-include "scripts/loadPermissions.php";
+include_once "functions.php";
+include_once "scripts/loadPermissions.php";
 $authBool = false;
 
 //******************************************************************

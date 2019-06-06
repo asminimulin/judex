@@ -1,6 +1,6 @@
 <?php
 
-include "standart.php";
+include_once "standart.php";
 
 function upload($submission_id, $language) {
     global $path_to_judge_root;

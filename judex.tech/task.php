@@ -1,5 +1,5 @@
 <?php
- include "standart.php";
+ include_once "standart.php";
 if (isset($_GET['id'])){
     $taskId = $_GET['id'];
     if (!file_exists("../Archive/$taskId") || $taskId <= 0){
@@ -42,7 +42,7 @@ if (isset($_GET['submission'])){
 </head>
 <body background="img/124.png">
 <?php
-include "views/navbar.php";
+include_once "views/navbar.php";
 ?>
 <!--<style>
     .leftBlock{

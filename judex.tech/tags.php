@@ -1,5 +1,5 @@
 <?php
-include "standart.php";
+include_once "standart.php";
 $elemOnPage = 12;
 $pageNumber = 1;
 if (isset($_GET['p'])){
@@ -22,7 +22,7 @@ $nextPage = $tmpRow?true:false;
 </head>
 
 <body background="img/124.png">
-<?php include "views/navbar.php";?>
+<?php include_once "views/navbar.php";?>
 <center>
     <h1>Теги</h1>
     <div class="cardList">

@@ -5,7 +5,7 @@
 <center>
     <?php
         if(!$link) {
-            include "/home/judex-master/judge/standart.judge.com/standart.php";
+            include_once "/home/judex-master/judge/standart.judge.com/standart.php";
         }
         if(!$link) {
             echo "<H1>DATABASE ERROR. RECONNECT.</H1>";

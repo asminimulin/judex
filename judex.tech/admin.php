@@ -1,4 +1,4 @@
-<?php include "standart.php"; ?>
+<?php include_once "standart.php"; ?>
 
 <html>
     <head>
@@ -6,9 +6,9 @@
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body background="img/124.png">
-        <?php include "views/navbar.php"; ?>
+        <?php include_once "views/navbar.php"; ?>
         <center>
-            <?php include "views/submission_table.php"; ?>
+            <?php include_once "views/submission_table.php"; ?>
         </center>
     </body>
 </html>

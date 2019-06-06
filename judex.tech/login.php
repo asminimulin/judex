@@ -1,5 +1,5 @@
 <?php
-include "functions.php";
+include_once "functions.php";
 $link = connect_to_db();
 
     if ($_COOKIE["token"]){

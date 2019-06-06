@@ -1,5 +1,5 @@
 <?php
-include "standart.php";
+include_once "standart.php";
 $elemOnPage = 20;
 $certainTask = false;
 if (isset($_GET['task_id'])){
@@ -36,7 +36,7 @@ if (isset($_GET['p'])){
 </head>
 
 <body background="img/124.png">
-<?php include "views/navbar.php";?>
+<?php include_once "views/navbar.php";?>
 <center>
     <h1>
         Все посылки

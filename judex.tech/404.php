@@ -1,6 +1,6 @@
 
 <?php
-    include "standart.php";
+    include_once "standart.php";
 ?>
 
 <!DOCTYPE html>
@@ -12,7 +12,7 @@
 
 <body background="img/124.png">
 <?php
-    include "views/navbar.php";
+    include_once "views/navbar.php";
 ?>
 <center>
     <h1>Вы попали на страницу 404!</h1>

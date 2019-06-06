@@ -1,5 +1,5 @@
 <?php
-include "standart.php";
+include_once "standart.php";
 if (isset($_POST['submission_id']) && isset($_POST['test_number']) && $PERMISSIONS[$PERMISSION_ID["isAdmin"]] == "1"){
     $sub_id = $_POST['submission_id'];
     $test_num = $_POST['test_number'];

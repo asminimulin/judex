@@ -1,5 +1,5 @@
 <?php
-include "standart.php";
+include_once "standart.php";
 ?>
 <html>
 <head>
@@ -8,7 +8,7 @@ include "standart.php";
 </head>
 
 <body background="img/124.png">
-<?php include "views/navbar.php";?>
+<?php include_once "views/navbar.php";?>
 <center>
     <h1>Рейтинг</h1>
     <table>

@@ -1,5 +1,5 @@
 <?php
-include "standart.php";
+include_once "standart.php";
 $viewUserObj;
 if (isset($_GET['id'])){
     $viewUserId = $_GET['id'];
@@ -29,7 +29,7 @@ if (isset($_GET['id'])){
 </head>
 
 <body background="img/124.png">
-<?php include "views/navbar.php";?>
+<?php include_once "views/navbar.php";?>
 <center>
     <h1>Страница пользователя</h1>
     <h2><?php echo $viewUserObj['login']." (".$viewUserObj['first_name']." ".$viewUserObj["last_name"].")"; ?></h2>

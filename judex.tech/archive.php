@@ -1,5 +1,5 @@
 <?php
-    include "standart.php";
+    include_once "standart.php";
     $elemOnPage = 10;
     $pageNumber = 1;
     $nextPage = false;
@@ -42,7 +42,7 @@ if (isset($_GET['tag_id'])){
 </head>
 <body background="../img/124.png">
 <?php
-include "views/navbar.php";
+include_once "views/navbar.php";
 ?>
 <center>
 	<h1><?php if($certainTag) {

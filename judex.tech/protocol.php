@@ -1,5 +1,5 @@
 <?php
-include "standart.php";
+include_once "standart.php";
 if (isset($_GET["submission_id"])){
     $submissionId = $_GET["submission_id"];
     if ($PERMISSIONS[$PERMISSION_ID["isAdmin"]] == "1") {
@@ -67,7 +67,7 @@ if (isset($_GET["submission_id"])){
 </head>
 
 <body background="img/124.png">
-<?php include "views/navbar.php";?>
+<?php include_once "views/navbar.php";?>
 <center>
 
     <h2>Протокол посылки</h2>

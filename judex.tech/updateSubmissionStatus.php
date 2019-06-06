@@ -1,5 +1,5 @@
 <?php
-include "functions.php";
+include_once "functions.php";
 if (isset($_POST['submission_id'])){
     $submissionId = $_POST['submission_id'];
     if (file_exists("../Submissions/$submissionId")){
