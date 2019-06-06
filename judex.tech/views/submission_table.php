@@ -1,14 +1,20 @@
 <?php
-    if(!$admin)
+$elemOnPage = 30;
+$pageNumber = 1;
+if (isset($_GET['p'])){
+    $pageNumber  = max(1, (int)($_GET['p']));
+}
 ?>
 
 <center>
     <?php
         if(!$link) {
-            include_once "/home/judex-master/judge/standart.judge.com/standart.php";
+            include_once "/standart.php";
         }
         if(!$link) {
             echo "<H1>DATABASE ERROR. RECONNECT.</H1>";
+            $link = mysqli_connect("judex.tech", "judge", "123456", "judge");
+            echo mysqli_error($link);
         }
         echo "<script src=\"/js/autocomplete.js\"></script>";
     ?>
@@ -23,7 +29,7 @@
             $selected_user_id = null;
         }
 
-        $sql = "SELECT id, name FROM archive ORDER BY id DESC";
+        $sql = "SELECT id, name FROM problems ORDER BY id DESC";
         $response = mysqli_query($link, $sql);
         $problems = [];
         while($row = mysqli_fetch_assoc($response)) {
@@ -93,7 +99,7 @@
                     ";
                 }
             ?>
-            <button type="submit" class="btn cyan mini" id="submit">Submit</button>
+            <input type="submit" class="btn cyan mini" id="submit" value="Submit">
             <script type = "text/javascript">
                 //document.cookie = "submission_login= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
                 //document.cookie = "submission_problem= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
@@ -112,9 +118,6 @@
             </script>
         </div>
         <style>
-            .submissions_table {
-                font-size: 20px;
-            }
             .submissions_table .form_wrapper {
                 display: inline-flex;
                 flex-wrap: wrap;
@@ -126,7 +129,6 @@
                 display: inline-block;
             }
         </style>
-        <div class="tableContainer">
         <table>
             <?php
                 $sql = "SELECT * FROM submissions";
@@ -137,59 +139,9 @@
                 } else if($selected_problem_id) {
                     $sql = $sql . " WHERE problem_id=$selected_problem_id";
                 }
-                $sql = $sql." order by id desc";
+                $sql = $sql." order by id desc limit ". (($pageNumber - 1) * $elemOnPage) . ", $elemOnPage";
                 $response = mysqli_query($link, $sql);
             ?> 
-            <style>
-                table {
-                    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-                    font-size: 0.9em;
-                    background: white;
-                    border-collapse: collapse;
-                    text-align: left;
-                    margin: 0 auto 0.5em;
-                    border: 2px solid #69c;
-                    text-align: center;
-                }
-
-                pre{
-                    font-size: 0.9em;
-                }
-
-                table th {
-                    background-color: #d9e8ff;
-                    font-weight: normal;
-                    font-size: 1em;
-                    color: #039;
-                    border: 2px solid #69c;
-                    text-align: center;
-                }
-
-                pre{
-                    font-size: 0.9em;
-                }
-
-                table th {
-                    background-color: #d9e8ff;
-                    font-weight: normal;
-                    font-size: 1em;
-                    color: #039;
-                    border-bottom: 2px solid #69c;
-                    padding: 0.6em 0.7em;
-                }
-
-                table td {
-                    color: #669;
-                    padding: 0.35em 0.7em;
-                    border: 1px dashed #69c;
-                    transition: 200ms;
-                }
-
-                table tr:not(.exampleDataTr):hover td{
-                    background:#d9ffd8;
-                    transition: 200ms;
-                }
-            </style>
 
             <tr>
                  <th>ID</th>
@@ -212,8 +164,8 @@
                     echo "<tr>
                         <td>$submission[id]</td>
                         <td>$submission[time]</td>
-                        <td><a href='/task.php?id=".$submission['problem_id']."'>$problem_name</a></td>
-                        <td><a href='/user.php?id=".$submission['user_id']."'>$user_login</a></td>
+                        <td><a href='task.php?id=".$submission['problem_id']."'>$problem_name</a></td>
+                        <td><a href='user.php?id=".$submission['user_id']."'>$user_login</a></td>
                         <td>$submission[language]</td>
                         <td>$normal_status</td>
                         <td>$submission_result[tests_passed]</td>
@@ -222,8 +174,26 @@
                               </tr>";
                 }
                 mysqli_free_result($result);
+            $sql = "SELECT * FROM submissions";
+            if($selected_user_id && $selected_problem_id) {
+                $sql = $sql . " WHERE user_id=$selected_user_id AND problem_id=$selected_problem_id";
+            } else if($selected_user_id) {
+                $sql = $sql . " WHERE user_id=$selected_user_id";
+            } else if($selected_problem_id) {
+                $sql = $sql . " WHERE problem_id=$selected_problem_id";
+            }
+            $sql = $sql." order by id desc limit ". (($pageNumber - 1+1) * $elemOnPage) . ", $elemOnPage";
+            $tmpRow = mysqli_fetch_assoc(mysqli_query($link, $sql));
+            $nextPage = $tmpRow?true:false;
             ?>
         </table>
-        </div>
+    </div>
+    <div class="pagingBar">
+        <input type="button" class="btn mini blue" <?php if ($pageNumber==1) echo "disabled"?> value="<" onclick="changePage(<?php echo ($pageNumber-1); ?>);"><?php echo " <g>".$pageNumber."</g> ";?><input type="button" class="btn mini blue" value=">" <?php if (!$nextPage) echo "disabled"?> onclick="changePage(<?php echo ($pageNumber+1); ?>);">
     </div>
 </center>
+<script type="text/javascript">
+    function changePage(np) {
+        location = "admin.php?p="+np;
+    }
+</script>
