@@ -27,7 +27,7 @@
 
         ?></h3>
     <input type="button" value="Редактировать" class="btn blue small" onclick="location='/editprofile.php'"><br>
-    <input type="button" value="Выйти" class="btn red small" onclick="location = '/logout.php'">
+    <input type="button" value="Выйти" class="btn red small" onclick="location = 'scripts/logout.php'">
 </center>
 
 </body>
