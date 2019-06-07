@@ -67,7 +67,7 @@ function connect_to_db() {
 
 function getProblemPath($problem_id) {
     global $PROBLEMS;
-    return "$POBLEMS/$problem_id";
+    return "$PROBLEMS/$problem_id";
 }
 
 function getSubmissionPath($submission_id) {

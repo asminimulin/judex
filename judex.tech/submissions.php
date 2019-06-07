@@ -1,5 +1,6 @@
 <?php
 include_once "include/standart.php";
+include_once "include/functions.php";
 $elemOnPage = 20;
 $certainTask = false;
 if (isset($_GET['task_id'])){
@@ -50,7 +51,7 @@ if (isset($_GET['p'])){
             $query = "select problem_id from submissions where user_id = $userId group by problem_id order by problem_id";
             $result = mysqli_query($link,$query);
             while ($row = mysqli_fetch_assoc($result)){
-                $jsonText = file_get_contents("../Archive/".$row['problem_id']."/statement.json");
+                $jsonText = file_get_contents(getProblemPath($row['problem_id'])."/statement.json");
                 $tmpObj = json_decode($jsonText, true);
                 $selectedWord="";
                 if ($certainTask && $taskId == $row['problem_id']){

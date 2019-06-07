@@ -1,11 +1,10 @@
 <?php
  include_once "include/standart.php";
  include_once "include/functions.php";
+
 if (isset($_GET['id'])){
     $taskId = $_GET['id'];
     $problemPath = getProblemPath($taskId);
-    echo $problemPath;
-    exit(1);
     if (!file_exists($problemPath) || $taskId <= 0){
         header("Location: 404.php");
     } else {
@@ -106,7 +105,7 @@ include_once "views/navbar.php";
     </table>
     </div>
 	<h2>Загрузка</h2>
-    <form name="upload" enctype="multipart/form-data" action="/submit.php" method="POST">
+    <form name="upload" enctype="multipart/form-data" action="scripts/submit.php" method="POST">
         Выберите язык и файл:
         <select required name="language">
             <option value="C++">C++</option>

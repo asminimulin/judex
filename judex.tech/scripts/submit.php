@@ -1,7 +1,14 @@
 <?php
 
-include_once "include/global.php";
-include_once "include/standart.php";
+// TODO:
+// refactor to make it includable in task.php
+
+include_once "../include/global.php";
+
+$link = mysqli_connect($CONF["mysql"]["host"],
+                        $CONF["mysql"]["user"],
+                        $CONF["mysql"]["password"],
+                        $CONF["mysql"]["dbname"]);
 
 function upload($submission_id, $language) {
     global $CONF;
@@ -9,22 +16,23 @@ function upload($submission_id, $language) {
     $submission_dir = $CONF["testing"]["submissions_dir"] . '/' . "$submission_id";
     mkdir($submission_dir, 0770, TRUE);	
 
-    $output_dir = $submission_dir . '/' . "output";
+    $output_dir = "$submission_dir/output";
     mkdir($output_dir, 0770, TRUE);
 
-    $path_to_file = $path_to_dir . '/' . "result.json";
+    $result_path = "$submission_dir/result.json";
     $submission_result = array();
     $submission_result["status"] = "IQ";
-    $fp = fopen($path_to_file, 'w');
+    $fp = fopen($result_path, 'w');
     fwrite($fp, '{"status": "IQ"}');
     fclose($fp);
     chmod($path_to_dir, 0777);
     chmod($path_to_file, 0777);
 	
-    $lang_conf = parse_ini_file("$JUDEX_HOME/conf.d/language.conf");
-    $uploaded = move_uploaded_file($_FILES['uploading_file']['tmp_name'], $path_to_dir . '/' . "code" . $lang_conf[$language]["extension"]);
+    $lang_conf = parse_ini_file("$JUDEX_HOME/conf.d/language.conf", true);
+    $filename = "$submission_dir/$submission_id".$lang_conf[$language]["extension"];
+    $uploaded = move_uploaded_file($_FILES['uploading_file']['tmp_name'], $filename);
 
-    chmod($path_to_dir . '/' . "$submission_id" . $lang_conf[$language]["extension"], 0777);
+    chmod($filename, 0777);
     return $uploaded;
 }
 
