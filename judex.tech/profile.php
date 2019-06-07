@@ -8,7 +8,7 @@
 ?>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
     <title>Profile</title>
 </head>
 

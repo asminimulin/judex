@@ -24,7 +24,7 @@ if (isset($_GET['id'])){
 ?>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
     <title><?php echo $viewUserObj['login']; ?></title>
 </head>
 

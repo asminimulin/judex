@@ -1,4 +1,9 @@
 <?php
+include_once "include/global.php";
+
+// TODO:
+// Заменить if на switch/case
+
 function getNormalStatus($str){
 if ($str == "RE") {
 $ans['status'] = "Ошибка выполнения программы";
@@ -51,16 +56,22 @@ return $ans;
 }
 }
 
-function parse_config($path) {
-    return json_decode(file_get_contents($path), true);
-}
-
 function connect_to_db() {
-	$db = parse_config("/home/judex-master/judex/conf.d/database.conf");
-	$new_connection = mysqli_connect($db["host"], $db["username"], $db["password"], $db["dbname"]);
-	return $new_connection;
+    global $CONF;
+    $new_connection = mysqli_connect($CONF["mysql"]["host"],
+                                $CONF["mysql"]["user"],
+                                $CONF["mysql"]["password"],
+                                $CONF["mysql"]["dbname"]);
+    return $new_connection;
 }
 
+function getProblemPath($problem_id) {
+    global $PROBLEMS;
+    return "$POBLEMS/$problem_id";
+}
 
-
+function getSubmissionPath($submission_id) {
+    global $SUBMISSIONS;
+    return "$SUBMISSIONS/$submission_id";
+}
 ?>

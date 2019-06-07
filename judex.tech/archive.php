@@ -36,7 +36,7 @@ if (isset($_GET['tag_id'])){
 
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
     <style>
     </style>
 </head>
@@ -57,7 +57,7 @@ include_once "views/navbar.php";
         if($certainTag) {
         foreach($problemsArr as $val){
             $tmp_problem_id = $val['problem_id'];
-            $tmpJsonText = file_get_contents("../Archive/$tmp_problem_id/statement.json");
+            $tmpJsonText = file_get_contents(getProblemPath($tmp_problem_id)."/statement.json");
             $tmpMainObj = json_decode($tmpJsonText, true);
             $query = "select name from problems where id = $tmp_problem_id";
             $result = mysqli_query($link,$query);
@@ -98,7 +98,7 @@ include_once "views/navbar.php";
                 $nextPage = true;
             }
             foreach ($taskList as $val){
-                $tmpJsonText = file_get_contents("../Archive/".$val['id']."/statement.json");
+                $tmpJsonText = file_get_contents(getProblemPath($val['id'])."/statement.json");
                 $tmpMainObj = json_decode($tmpJsonText, true);
                 $cond = $tmpMainObj["conditions"];
                 $query = "select solved from user_result where user_id = $userId and problem_id = ".$val['id'];

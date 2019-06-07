@@ -1,13 +1,16 @@
 <?php
 
+include_once "include/global.php";
 include_once "include/standart.php";
 
 function upload($submission_id, $language) {
-    global $path_to_judge_root;
+    global $CONF;
+    global $JUDEX_HOME;
+    $submission_dir = $CONF["testing"]["submissions_dir"] . '/' . "$submission_id";
+    mkdir($submission_dir, 0770, TRUE);	
 
-    $language = strtolower($language);
-	$path_to_dir = $path_to_judge_root . '/' . "Submissions" . '/' . $submission_id;
-	mkdir($path_to_dir, 0777, TRUE);	
+    $output_dir = $submission_dir . '/' . "output";
+    mkdir($output_dir, 0770, TRUE);
 
     $path_to_file = $path_to_dir . '/' . "result.json";
     $submission_result = array();
@@ -18,11 +21,10 @@ function upload($submission_id, $language) {
     chmod($path_to_dir, 0777);
     chmod($path_to_file, 0777);
 	
-    $lang_conf = json_decode(file_get_contents(getenv("JUDGE_ROOT")."/conf.d/language.conf"), true);
-    echo getenv("JUDGE_ROOT")."/conf.d/language.conf";
+    $lang_conf = parse_ini_file("$JUDEX_HOME/conf.d/language.conf");
     $uploaded = move_uploaded_file($_FILES['uploading_file']['tmp_name'], $path_to_dir . '/' . "code" . $lang_conf[$language]["extension"]);
 
-    chmod($path_to_dir . '/' . "code" . $lang_conf[$language]["extension"], 0777);
+    chmod($path_to_dir . '/' . "$submission_id" . $lang_conf[$language]["extension"], 0777);
     return $uploaded;
 }
 
@@ -36,7 +38,6 @@ function getCurrentUserId($link, $token){
 
 
 function submit() {
-    global $path_to_judge_root;
     global $link;
 
     if(!isset($_POST)) {

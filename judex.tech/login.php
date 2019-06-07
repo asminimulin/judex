@@ -80,7 +80,7 @@ if (isset($_POST['submit'])){
 
 <html>
 <header>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
     <title>Login</title>
     <meta name="viewport" content="initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no, width = device-width" />
     <style>

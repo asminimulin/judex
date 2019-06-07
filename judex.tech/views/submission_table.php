@@ -45,7 +45,7 @@ if (isset($_GET['p'])){
        // $users["0"] = "Все";
     ?>
 
-    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="/styles/style.css">
     <div class="submissions_table">
         <font color="red"><H1>Посылки</H1></font>
         <div class="form_wrapper">

@@ -1,11 +1,15 @@
 <?php
  include_once "include/standart.php";
+ include_once "include/functions.php";
 if (isset($_GET['id'])){
     $taskId = $_GET['id'];
-    if (!file_exists("../Archive/$taskId") || $taskId <= 0){
+    $problemPath = getProblemPath($taskId);
+    echo $problemPath;
+    exit(1);
+    if (!file_exists($problemPath) || $taskId <= 0){
         header("Location: 404.php");
     } else {
-        $jsonText = file_get_contents("../Archive/$taskId/statement.json");
+        $jsonText = file_get_contents($problem_path."/statement.json");
         $mainObj = json_decode($jsonText, true);
     }
 } else {
@@ -32,7 +36,7 @@ if (isset($_GET['submission'])){
 ?>
 <html>
 <head>
-    <link rel = "stylesheet" type = "text/css" href = "style.css">
+    <link rel = "stylesheet" type = "text/css" href = "styles/style.css">
     <meta charset="utf-8">
     <link href="js/prism/prism.css" rel="stylesheet">
 	<title><?php echo $mainObj["name"]; ?></title>
@@ -91,8 +95,8 @@ include_once "views/navbar.php";
 
             foreach ($mainObj["examples"] as $val){
 
-                $tmpExample["in"] = file_get_contents("../Archive/$taskId/tests/$val");
-                $tmpExample["out"] = file_get_contents("../Archive/$taskId/answers/$val");
+                $tmpExample["in"] = file_get_contents("$problem_path/tests/$val");
+                $tmpExample["out"] = file_get_contents("$problem_path/answers/$val");
                 
                 $str = "<tr class='exampleDataTr'><td class='exampleDataTd'><pre   style='background-color: white;' ><code class='language-none'><xmp>".$tmpExample["in"]."</xmp></code></pre></td><td class='exampleDataTd'><pre style='background-color: white;'   ><code class='language-none'><xmp>".$tmpExample["out"]."</xmp></code></pre></td></tr>";
                 echo $str;
@@ -142,7 +146,7 @@ include_once "views/navbar.php";
 
         $needToUpdateArr;
         while ($row = mysqli_fetch_assoc($result)){
-            $jsonText = file_get_contents("../Submissions/".$row["id"]."/result.json");
+            $jsonText = file_get_contents(getSubmissionPath($row["id"])."/result.json");
             $mainObj2 = json_decode($jsonText, true);
             $tmpNormalStatus = getNormalStatus($mainObj2["status"]);
             $needToUpdateArr[$row['id']] = !$tmpNormalStatus["isEnd"];
@@ -231,7 +235,7 @@ include_once "views/navbar.php";
 
     function update (id){
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/updateSubmissionStatus.php", true);
+        xhr.open("POST", "script/updateSubmissionStatus.php", true);
         xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
         xhr.onload = ()=>{
                 var mainObj = JSON.parse(xhr.responseText);

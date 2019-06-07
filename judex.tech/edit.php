@@ -60,7 +60,7 @@
     <head>
         <title>Редактировать</title>
     </head>
-    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
     <body background="img/124.png">
         <?php include_once "views/navbar.php"; ?>
         <center> 

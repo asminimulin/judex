@@ -3,7 +3,7 @@ include_once "include/standart.php";
 ?>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
     <title>TOP 50</title>
 </head>
 

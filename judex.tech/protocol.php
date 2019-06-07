@@ -1,5 +1,7 @@
 <?php
 include_once "include/standart.php";
+include_once "icnlude/functions.php";
+
 if (isset($_GET["submission_id"])){
     $submissionId = $_GET["submission_id"];
     if ($PERMISSIONS[$PERMISSION_ID["isAdmin"]] == "1") {
@@ -10,7 +12,8 @@ if (isset($_GET["submission_id"])){
     $result = mysqli_query($link, $query);
     if($row = mysqli_fetch_assoc($result)){
         mysqli_free_result($result);
-        $jsonText = file_get_contents("../Submissions/" . $submissionId . "/result.json");
+        $language = $row["language"];
+        $jsonText = file_get_contents(getSubmissionPath($submissionId) . "/result.json");
         $mainObj = json_decode($jsonText, true);
         $taskId = $row['problem_id'];
         $taskName = mysqli_fetch_assoc(mysqli_query($link, "select name from problems where id=$taskId"))['name'];
@@ -23,7 +26,7 @@ if (isset($_GET["submission_id"])){
 ?>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
     <link href="js/prism/prism.css" rel="stylesheet">
     <title>Protocol</title>
     <style>
@@ -115,16 +118,10 @@ if (isset($_GET["submission_id"])){
 
     <div class="line-numbers codeView">
         <?php
-        if (file_exists("../Submissions/" . $submissionId)){
-            $code = "";
-            if (file_exists("../Submissions/" . $submissionId . "/code.cpp")){
-                    $code = file_get_contents("../Submissions/" . $submissionId . "/code.cpp");
-                    $lang = 'cpp';
-            } else if (file_exists("../Submissions/" . $submissionId . "/code.py")){
-                    $code = file_get_contents("../Submissions/" . $submissionId . "/code.py");
-                    $lang = 'python';
-            }
-            echo "<pre><code id='userCode' class='language-$lang'><xmp>".$code."</xmp></code></pre>";
+        if (file_exists(getSubmissionPath($submissionId))) {
+            $codePath = getSubmissionPath($submissionId)."$submissionId".$LANG_CONF[$language]["extension"];
+            $code = file_get_contents($codePath);
+            echo "<pre><code id='userCode' class='language-$language'><xmp>".$code."</xmp></code></pre>";
 
         }
         ?>
@@ -152,7 +149,7 @@ if (isset($_GET["submission_id"])){
                </tr>
            </table>
             <br><center>
-                <form method="post" action="testFullView.php" enctype="application/x-www-form-urlencoded">
+                <form method="post" action="views/testFullView.php" enctype="application/x-www-form-urlencoded">
                     <input type="submit" class="btn cyan small" value="Подробнее">
                     <input type="hidden" id="form_sub_id" name="submission_id" value="">
                     <input type="hidden" id="form_test_num" name="test_number" value="">
