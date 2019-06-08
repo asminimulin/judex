@@ -1,5 +1,5 @@
 <?php
-include "standart.php";
+//include "standart.php";
 
 function removeDir($dir) {
     if ($objs = glob($dir."/*")) {
@@ -16,7 +16,6 @@ $groups = array();
 $comment = "";
 
 if (isset($_POST['submit'])) {
-	//$adress = "/home/judge/Archive";
     $name = $_POST['name'];
 	$timeLim = $_POST['timeLim'];
 	$memoryLim = $_POST['memoryLim'];
@@ -56,14 +55,13 @@ if (isset($_POST['submit'])) {
     $pipes = array();
     $descriptors = array();
     $inputAdress = $tmpAdress."input.txt";
-    $outputAdress = $tmpAdress"output.txt";
+    $outputAdress = $tmpAdress."output.txt";
             
     if ($input == "stdin") {
         if ($output == "stdout") {
             $descriptors = array(
                 0 => array("file", $tmpAdress."input.txt", "r"),
                 1 => array("file", $tmpAdress."output.txt","w"));
-                $proc
         }
         else {
             $descriptors = array(
@@ -215,12 +213,11 @@ if (isset($_POST['submit'])) {
                                          <option value="by_test">Потестовое</option>\
                                     </select><br>\
                                     <label>Необходимые подгруппы:</label>\
-                                    <div style="width:200px; height:100px; overflow:auto; border:solid 1px #C3E4FE;">';
-                    for (var j = 1; i < x; i++) {
+                                    <div style="width:200px; height:30px; overflow:auto; border:solid 1px #C3E4FE;">';
+                    for (var j = 1; j < i; j++) {
                         genblock+=      '<input type = "checkbox" name = "group'+i+'Select[]" value="'+j+'">'+j+'<br>';
                     }
                     genblock+=     '</div>\
-                                    <input style="min-height: 3px;width:30%;resize:none;"class="group" type = "text" name="group'+i+'Req"><br>\
                                     <label class="authLabel" style="font-size: 10px">Тесты</label>\
                                     <input required type="file" name="group'+i+'Tests[]" multiple><br>\
                                 </p>';
