@@ -15,6 +15,6 @@
         }
     ?>
     <?php
-        echo "<li class='right'><a href='profile.php'>$userLogin</a></li>";
+        echo "<li class='right'><a id='userLoginBlock' href='profile.php'>$userLogin</a></li>";
     ?>
 </ul>

@@ -1,18 +1,6 @@
 <?php
 include_once "include/functions.php";
-    function get_dbconnection() {
-        $dbinfo = parse_config("../conf.d/database.conf");
-        $result = mysqli_connect($dbinfo["host"], $dbinfo["username"], $dbinfo["password"], $dbinfo["dbname"]);
-        if(!$result) {
-            $strErr = "[".date("Y-m-d H:i:s")."] ERROR : Can't connect to DB on page ".$_SERVER['REQUEST_URI']."\n";
-            $file = fopen("../logs/main.log","a");
-            fwrite($file,$strErr);
-            fclose($file);
-            die("DB ERROR");
-        }
-        return $result;
-    }
-    $link = get_dbconnection();
+    $link = connect_to_db();
     $login = ""; $email = ""; $name = "";
     $message = "";
 
@@ -42,19 +30,19 @@ include_once "include/functions.php";
         $res = file_get_contents($url, false, $context);
         //var_dump($res);
         if(!preg_match("/[a-zA-Z0-9_.]{4,50}/", $login)) {
-            $message = "Некорректный логин";
+            $message = "Некорректный логин: [a-zA-Z0-9_.]: 4-50 символов";
             goto flag;
         } else if(!preg_match("/[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]{6,50}/", $password)) {
-            $message = "Некорректный пароль";
+            $message = "Некорректный пароль: [a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]: 6-50 символов";
             goto flag;
         } else if(!preg_match("/[a-zA-Z0-9\.]+@[a-zA-Z0-0]+.[a-zA-Z]+/", $email) || strlen($email) > 50 ) {
             $message = "Некорректный email";
             goto flag;
         } else if (!preg_match("/[a-zA-Zа-яА-Я-]+/",$first_name) || strlen($first_name) > 50){
-            $message = "Некорректное имя";
+            $message = "Некорректное имя: [a-zA-Zа-яА-Я-]: 1-50 символов";
             goto flag;
         } else if (!preg_match("/[a-zA-Zа-яА-Я-]+/",$last_name) || strlen($last_name) > 50){
-            $message = "Некорректная фамилия";
+            $message = "Некорректная фамилия: [a-zA-Zа-яА-Я-]: 1-50 символов";
             goto flag;
         } else if ($password != $repeat_password) {
             $message = "Пароли не совпадают";
@@ -116,12 +104,20 @@ include_once "include/functions.php";
         <div class="authFormDiv">
             <form class="authForm" name="loginForm" action="registration.php" method="POST">
                 <label class="authLabel">Регистрация</label>
-                <input class="authInput" type="text" pattern="[a-zA-Z0-9_.]{4,50}" name="login" required autofocus id="login" title="[a-zA-Z0-9_.]: 4-50 символов" placeholder="Логин" <?php  echo "value='".$login."'"?>>
-                <input class="authInput" type="email"  pattern="[a-zA-Z0-9\.]+@[a-zA-Z0-0]+.[a-zA-Z]+" required name="email" id="email" title="example@mail.dev" placeholder="Email" <?php  echo "value='$email'"?>>
-                <input class="authInput" type="text" pattern="[a-zA-Zа-яА-Я-]+" required name="first_name" id="first_name" title="[a-zA-Zа-яА-Я-]: 1-50 символов"  placeholder="Имя" <?php  echo "value='$first_name'"?>>
-                <input class="authInput" type="text" pattern="[a-zA-Zа-яА-Я-]+" required name="last_name" id="last_name" title="[a-zA-Zа-яА-Я-]: 1-50 символов"  placeholder="Фамилия" <?php  echo "value='$last_name'"?>>
-                <input class="authInput" type="password" pattern="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]{6,50}"  required name="password" id="password" title="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]: 6-50 символов"  placeholder="Пароль">
-                <input class="authInput" type="password" pattern="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]{6,50}"  required name="repeat_password" id="repeat_password"  title="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]: 6-50 символов"  placeholder="Повторите пароль">
+		<div class = "containerWithTitles">
+		<span class="inputTitle">Логин</span>
+                <input class="authInput" type="text" pattern="[a-zA-Z0-9_.]{4,50}" name="login" required autofocus id="login" title="[a-zA-Z0-9_.]: 4-50 символов" placeholder="Balabolus123" <?php  echo "value='".$login."'"?>>
+                <span class="inputTitle">Email</span>
+		<input class="authInput" type="email"  pattern="[a-zA-Z0-9\.]+@[a-zA-Z0-0]+.[a-zA-Z]+" required name="email" id="email" title="example@mail.dev" placeholder="example@judex.tech" <?php  echo "value='$email'"?>>
+                <span class="inputTitle">Имя</span>
+		<input class="authInput" type="text" pattern="[a-zA-Zа-яА-Я-]+" required name="first_name" id="first_name" title="[a-zA-Zа-яА-Я-]: 1-50 символов"  placeholder="Иван" <?php  echo "value='$first_name'"?>>
+                <span class="inputTitle">Фамилия</span>
+		<input class="authInput" type="text" pattern="[a-zA-Zа-яА-Я-]+" required name="last_name" id="last_name" title="[a-zA-Zа-яА-Я-]: 1-50 символов"  placeholder="Иванов" <?php  echo "value='$last_name'"?>>
+                <span class="inputTitle">Пароль</span>
+		<input class="authInput" type="password" pattern="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]{6,50}"  required name="password" id="password" title="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]: 6-50 символов"  placeholder="Например, •••••••••">
+                <span class="inputTitle">Повторите пароль</span>
+		<input class="authInput" type="password" pattern="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]{6,50}"  required name="repeat_password" id="repeat_password"  title="[a-zA-Z0-9_\.!?#@%^&*()а-яА-Я]: 6-50 символов"  placeholder="•••••••••">
+		</div>
                 <div class = "g-recaptcha" data-sitekey = "6LeLap0UAAAAAOPK8DYOXpSsrNAS8tk9mAK6sDpu" ></div>
                 <p class="authNotification"><?php if($message != 'OK') {echo $message;} ?></p>
                 <input class="authButton" type="submit"  value="Зарегистрироваться"  name="submit" ><br>

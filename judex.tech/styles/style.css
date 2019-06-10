@@ -387,6 +387,19 @@ body {
 	margin:0px;
 }
 
+div.containerWithTitles{
+	display:table-caption;
+}
+
+.inputTitle{
+	font-size: 0.95em;
+	float:left;
+	margin-left:20px;
+	margin-bottom:3px;
+	margin-tom:7px;
+}
+
+
 
 ul.topnav {
 	list-style-type: none;

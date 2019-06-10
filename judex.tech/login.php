@@ -97,10 +97,16 @@ if (isset($_POST['submit'])){
 <div class="authContainer">
 
 <div class="authFormDiv">
+
     <form class="authForm" name="loginForm" action="login.php" method="POST">
+
         <label class="authLabel">Вход</label>
+<div class="containerWithTitles">
+<span class ="inputTitle">Логин или Email</span>
         <input class="authInput" type="text" <?php if($authBool) echo "disabled"?> name="loginOrEmail" required autofocus id="login" title="Логин или Email" placeholder="Логин или Email">
-        <input class="authInput" type="password" <?php if($authBool) echo "disabled"?> required name="password" id="password" title="Пароль"  placeholder="Пароль">
+	<span class ="inputTitle">Пароль</span>        
+<input class="authInput" type="password" <?php if($authBool) echo "disabled"?> required name="password" id="password" title="Пароль"  placeholder="Пароль">
+<div>
         <p><?php if ($errorText) echo $errorText;?></p>
         <input class="authButton" type="submit" <?php if($authBool) echo "disabled"?> value="Войти"  name="submit" ><br>
         <span class="authChangePage">Нет аккаунта? <a href="registration.php">Зарегистрироваться!</a></span>
