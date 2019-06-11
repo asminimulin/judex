@@ -1,8 +1,8 @@
 <?php
  include_once "include/standart.php";
- $query = "select first_name, last_name from users where id = $userId";
+ $query = "select login, first_name, last_name, email, rating from users where id = $userId";
  $result = mysqli_query($link, $query);
- $userName  = mysqli_fetch_assoc($result);
+ $userObj  = mysqli_fetch_assoc($result);
  mysqli_free_result($result);
 
 ?>
@@ -16,17 +16,10 @@
 <?php include_once "views/navbar.php";?>
 <center>
     <h1>Профиль</h1>
-    <h2><?php echo $userName["first_name"]." ".$userName["last_name"] ;?></h2>
-    <h3>Ваш рейтинг: <?php
-        $query = "select rating from users where id=$userId";
-        $result = mysqli_query($link, $query);
-        $row = mysqli_fetch_assoc($result);
-        mysqli_free_result($result);
-        echo $row['rating'];
-
-
-        ?></h3>
-    <input type="button" value="Редактировать" class="btn blue small" onclick="location='/editprofile.php'"><br>
+    <h2><?php echo $userObj["first_name"]." (".$userObj['login'].") ".$userObj["last_name"] ;?></h2>
+    <h3><?php echo $userObj['email']; ?></h3>
+    <h3>Ваш рейтинг: <?php echo $userObj['rating']; ?></h3>
+    <input type="button" value="Редактировать" class="btn blue small" onclick="location='/editprofile.php'"><br><br>
     <input type="button" value="Выйти" class="btn red small" onclick="logout();">
 </center>
 <script>
