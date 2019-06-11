@@ -1,5 +1,5 @@
 <?php
-include "standart.php";
+include "include/standart.php";
 
 function removeDir($dir) {
     if ($objs = glob($dir."/*")) {
@@ -186,7 +186,7 @@ if (isset($_POST['submit'])) {
 
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
     <title>Upload task</title>
     <script type="text/javascript">
         function GenGroups() {
@@ -250,12 +250,12 @@ if (isset($_POST['submit'])) {
                 <textarea style="min-height: 300px; width: 60%; resize: none;" class="taskComments" name="comments" placeholder="Комментарии к задаче"><?php echo $comments;?></textarea><br> 
             </p>
             <label class="authLabel" style="font-size: 10px" placeholder="stdin">Название входного файла (stdin, если стандартный ввод):</label>
-            <input style="width:30%;resize:none;"class="group" type = "text" name="input"><br>
+            <input style="width:30%;resize:none;"class="group" type = "text" name="input"><br><br>
             <label class="authLabel" style="font-size: 10px" placeholder="stdin">Название выходного файла (stdout, если стандартный вывод):</label>
-            <input style="width:30%;resize:none;"class="group" type = "text" name="output"><br>
+            <input style="width:30%;resize:none;"class="group" type = "text" name="output"><br><br>
 
             <label class="authLabel" style="font-size: 10px">Количество подгрупп тестов:</label>
-            <input type="number" name="numOfGroups" id='NumOfGroups' min="0">
+            <input type="number" name="numOfGroups" id='NumOfGroups' min="0"><br><br>
             <button onclick="GenGroups()">Подтвердить количество подгрупп.</button>
             <p id="Groups"></p>
             <label class="authLabel" style="font-size: 10px">Претесты</label><br>
