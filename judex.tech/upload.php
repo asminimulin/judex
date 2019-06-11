@@ -1,5 +1,5 @@
 <?php
-include "standart.php";
+include "include/standart.php";
 $name = "";
 $condition = "";
 
@@ -78,10 +78,9 @@ if (isset($_POST['submit'])) {
 ?>
 <html>
 <head>
-	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="styles/style.css">
     <title>Upload task</title>
     <script type="text/javascript">
-    	funtion
     </script>
 </head>
 <body background = "img/124.png">
