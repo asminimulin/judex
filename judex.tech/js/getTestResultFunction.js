@@ -1,6 +1,6 @@
 function getTestResult(sub_id, testNum){
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/getTestResult.php", true);
+    xhr.open("POST", "scripts/getTestResult.php", true);
     xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     xhr.onload = ()=>{
         var ans = JSON.parse(xhr.responseText);

@@ -1,7 +1,6 @@
 <?php
 include_once "include/functions.php";
 $link = connect_to_db();
-
     if ($_COOKIE["token"]){
         $tokenFromClient = $_COOKIE["token"];
         $query = "select user_id from auth where token ='".$tokenFromClient."'";
