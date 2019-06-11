@@ -1,5 +1,5 @@
 <?php
-//include "standart.php";
+include "standart.php";
 
 function removeDir($dir) {
     if ($objs = glob($dir."/*")) {
