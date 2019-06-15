@@ -21,7 +21,7 @@ if (isset($_POST['submit'])){
         $loginOrEmail = $_POST["loginOrEmail"];
         $password = $_POST["password"];
 
-        $query = "select id from users where login='".$loginOrEmail."' and password='".MD5($password)."'";
+        $query = "select id from users where (email = '".$loginOrEmail."' or login='".$loginOrEmail."') and password='".MD5($password)."'";
         $result = mysqli_query($link,$query);
         $row = mysqli_fetch_row($result);
         if ($row){
@@ -45,32 +45,7 @@ if (isset($_POST['submit'])){
                 header("Location:  /");
             }
         } else {
-            $query = "select id from users where email='".$loginOrEmail."' and password='".MD5($password)."'";
-            $result = mysqli_query($link,$query);
-            $row = mysqli_fetch_row($result);
-            if ($row){
-                $token = "";
-                $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
-                $numChars = strlen($chars);
-                for ($i = 0; $i < 32; $i++){
-                    $token.= substr($chars, rand(1,$numChars)-1, 1);
-                }
-                mysqli_free_result($result);
-                $query = "delete from auth where user_id =".$row[0];
-                mysqli_query($link,$query);
-                $query = "insert into auth (user_id, token, date) values (".$row[0].", '$token', '".date("Y-m-d H:i:s")."' )";
-                mysqli_query($link,$query);
-                setcookie("token", "".$token, time()+(86400*3), "/");
-                if ($_COOKIE["logoutFrom"]){
-                    $tmpUrl = $_COOKIE['logoutFrom'];
-                    setcookie("logoutFrom" ," " , time()-5);
-                    header("Location: $tmpUrl");
-                } else {
-                    header("Location:  /");
-                }
-            } else {
-                $errorText = "Неверный логин или пароль";
-            }
+            $errorText = "Неверный логин или пароль";
         }
 
     }
