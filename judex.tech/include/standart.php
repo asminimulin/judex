@@ -40,10 +40,12 @@ if ($_COOKIE["token"]){
             loadPermissions();
         }
     } else {
+        setcookie("logoutFrom", "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
         setcookie("token", "", time()-5);
         header("Location: login.php");
     }
 } else {
+    setcookie("logoutFrom", "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
     header("Location: login.php");
 }
 
