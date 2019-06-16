@@ -62,6 +62,7 @@ function connect_to_db() {
                                 $CONF["mysql"]["user"],
                                 $CONF["mysql"]["password"],
                                 $CONF["mysql"]["dbname"]);
+    mysqli_set_charset($new_connection, "utf8");
     return $new_connection;
 }
 
