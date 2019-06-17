@@ -8,8 +8,8 @@ if (isset($_POST['submission_id']) && isset($_POST['test_number']) && $PERMISSIO
     $taskId= mysqli_fetch_assoc($result)['problem_id'];
     mysqli_free_result($result);
     $ansObj = [];
-    problemPath = getProblemPath($taskId);
-    submissionPath = getSubmissionPath($submissionId);
+    $problemPath = getProblemPath($taskId);
+    $submissionPath = getSubmissionPath($submissionId);
     if (file_exists("$problemPath/tests/$test_num")) {
         $ansObj['in'] = cutUp(file_get_contents("$problemPath/tests/$test_num"));
     }
