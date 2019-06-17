@@ -24,8 +24,6 @@ if ($_COOKIE["token"]){
         if ($timeDif > 120) {
             setcookie("logoutFrom", "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
             setcookie("token", "" , time()-5);
-            $query = "delete from auth where token = '$tokenFromClient'";
-            mysqli_query($link, $query);
             header("Location: /login.php");
         } else {
             $query = "update auth set date='".date("Y-m-d H:i:s")."' where user_id=".$row[0];
