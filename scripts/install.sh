@@ -1,110 +1,207 @@
 #!/bin/bash
 
-# TODO:
-# Configure environment variables JUDEX_HOME JUDEX_DATA
-# Load mysqldump 
-# 
+#*****************Functions************************
+
+function install-site() {
+    # Args:
+    # $1 - servername
+    # $2 - site-path
+
+    echo "Installing site..."
+    local servername=$1
+    local path="/etc/apache2/sites-available/$servername.conf"
+    local site_path=$2
+    echo \
+"<VirtualHost *:80>
+    ServerName $servername
+    DocumentRoot $site_path
+    <Directory $site_path>
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Require all granted
+    </Directory>
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+	CustomLog \${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>" >"$path"
+    cp -r "./judex.tech" "$site_path"
+    echo "Created site $servername on $site_path"
+}
+
+function error() {
+    echo "Installation aborted.\n$1"
+}
+
+function read-password {
+    if [[ "$#" -lt "1" ]]; then
+        echo "Usage $0 <password-variable"
+        exit 1
+    fi
+    local -n link=$1
+    local password
+    local confirm
+    echo "Enter new password:"
+    read -s password
+    if [ -z "$password" ]; then
+        echo "Empty password does not available"
+        return 1
+    fi
+    echo "Repeat password:"
+    read -s confirm
+    if [ "$password" != "$confirm" ]; then
+        echo "Passwords mismatch"
+        return 1
+    fi
+    link="$password"
+}
+
+function create-system-dir() {
+    if [[ "$#" -lt "1" ]]; then
+        echo "Usage: $0 <PATH>"
+        exit 1
+    fi
+    local path=$1
+    if [[ ! -d $path ]]; then
+        mkdir $path
+    else
+        echo "Found existing $path"
+    fi
+}
+
+#********************************************************
 
 if [[ $EUID -ne 0 ]]; then
-    echo "Installation needs root privileges. Use sudo or run as root."
+    echo "Installation needs root privileges."
     exit 1
 fi
 
-install_packages() {
-    apt update
-    apt install -y \
-        python3 \
-        vim \
-        g++ \
-        python3-pip \
-        php \
-        apache2 \
-        mysql-server \
-        htop \
-	git
-    pip3 install \
-        pymysql \
-        psutil
-}
+INSTALLATION_DIR="/opt/judex"
 
-init_filesystem() {
-    submissions="$JUDEX_DATA/Submissions"
-    problems="$JUDEX_DATA/Problems"
+if [ -d "$INSTALLATION_DIR" ]; then
+    echo "System Judex has already installed."
+    exit 1
+fi
 
-    if [ -d "$JUDEX_DATA" ]; then
-        echo "Directory $JUDEX_DATA already exists."
-        echo "Do you want to continue installation(it will override this directory)?[Y/N]"
-        local ans
-        read ans
-        if [ "$ans" == "N" ]; then
-            echo "Installation refused"
-            exit 0
-        else
-            rm -rf "$JUDEX_DATA"
+if [[ "$0" != "scripts/install.sh" ]]; then
+    error "Installation must be ran as ./scripts/install.sh"
+    exit 1
+fi
+
+create-system-dir "$INSTALLATION_DIR"
+
+USER="judex-master"
+DEVMODE=1
+
+<< --SKIP--
+while [[ $# -gt 0 ]]; do
+    arg="$1"
+    case $arg in
+        "--user")
+            shift
+            USER="$1"
+            shift
+        ;;
+        "--dev")
+            DEVMODE=1
+            shift
+        ;;
+        *)
+            echo "Unknow option $arg"
+            exit 1
+        ;;
+    esac
+done
+--SKIP--
+
+# Creating linux user if necessary
+if ! id -u $USER &>/dev/null; then
+    echo "Linux user $USER will be created"
+
+    # Getting new unix user password
+    for ((i = 1;i <= 3;++i)); do
+        read-password PASSWORD && break
+        if [ "$DEVMODE" == "1" ]; then
+            echo "read-password FAILED"
         fi
+    done
+    if [ -z "$PASSWORD" ]; then
+        error "Failed to create Linux user. Password is empty."
+        exit 1
     fi
 
-    mkdir "$JUDEX_DATA"
-    mkdir "$submissions"
-    mkdir "$problems"
-    chown --recursive $user:$user "$JUDEX_DATA"
-    chmod --recursive 774 "$JUDEX_DATA"
-}
+    useradd -s /bin/bash -m $USER
+    echo "$USER:$PASSWORD" | chpasswd
 
-parse_arguments() {
-    while [[ $# -gt 0 ]]; do
-        arg="$1"
-        case $arg in
-            --debug)
-                debug=1
-                shift
-            ;;
-            --no-install)
-                install=0
-                shift
-            ;;
-            --user)
-                shift
-                user=$1
-                shift
-            ;;
-            *)
-                echo "Unknow option $arg"
-                exit 1
-            ;;
-        esac
-    done
-}
-
-init_database() {
-    echo "INIT DATABASE NOT IMPLEMENTED";
-}
-
-init_environment() {
-    JUDEX_DATA="/srv/judex"
-}
-
-install=1
-debug=0
-user="NO_USER_CHOSEN"
-
-parse_arguments $@
-
-if [[ $debug -ne 0 ]]; then 
-    echo "Debug"
-fi
-
-if [[ $install -ne 0 ]]; then
-    echo "Install packages"
-    install_packages
+    if [ $DEVMODE == "1" ]; then
+        echo "User <$USER> with password <$PASSWORD> successfully created"
+    else
+        echo "User <$USER> successfully created"
+    fi
 else
-    echo "No install packages"
+    echo "User $USER exists"
 fi
 
-if [ "$user" == "NO_USER_CHOSEN" ] || [ -z "$user" ]; then
-    echo "No user specified"
-    exit 1
+# Initializing necessary filesystem
+JUDEX_HOME="/home/$USER/.judex"
+create-system-dir "$JUDEX_HOME"
+echo "\$JUDEX_HOME set to $JUDEX_HOME"
+
+JUDEX_CONFIG="/etc/judex"
+create-system-dir "$JUDEX_CONFIG"
+echo "\$JUDEX_CONFIG set to $JUDEX_CONFIG"
+
+JUDEX_DATA="$JUDEX_HOME/data"
+create-system-dir "$JUDEX_DATA"
+echo "\$JUDEX_DATA set to $JUDEX_DATA"
+
+JUDEX_SRC="$INSTALLATION_DIR/src"
+create-system-dir "$JUDEX_SRC"
+echo "\$JUDEX_SRC set to $JUDEX_SRC"
+
+JUDEX_RUN="/var/run/judex"
+echo "\$JUDEX_RUN set to $JUDEX_RUN"
+
+JUDEX_SUBMISSIONS="$JUDEX_DATA/Submissions"
+create-system-dir "$JUDEX_SUBMISSIONS"
+echo "\$JUDEX_SUBMISSIONS set to $JUDEX_SUBMISSIONS"
+
+JUDEX_PROBLEMS="$JUDEX_DATA/Problems"
+create-system-dir "$JUDEX_PROBLEMS"
+echo "\$JUDEX_PROBLEMS set to $JUDEX_PROBLEMS"
+
+JUDEX_ARCHIVE="$JUDEX_DATA/Archive"
+create-system-dir "$JUDEX_ARCHIVE"
+echo "\$JUDEX_ARCHIVE set to $JUDEX_ARCHIVE"
+
+chown $USER:$USER -R "$JUDEX_HOME"
+
+# Create config file
+echo "Creating judex.conf..."
+config="
+# Auto-generated config file.
+# Created: $(date '+%Y/%m/%d %H:%M:%S').
+
+[judex]
+JUDEX_HOME=$JUDEX_HOME
+JUDEX_DATA=$JUDEX_DATA
+JUDEX_SRC=$JUDEX_SRC
+JUDEX_RUN=$JUDEX_RUN
+JUDEX_SUBMISSIONS=$JUDEX_SUBMISSIONS
+JUDEX_PROBLEMS=$JUDEX_PROBLEMS
+JUDEX_ARCHIVE=$JUDEX_ARCHIVE
+JUDEX_CONFIG=$JUDEX_CONFIG
+"
+filename="$JUDEX_CONFIG/judex.conf"
+echo "$config" >"$filename"
+echo "Created config file in $filename"
+unset filename config
+
+# Copying code
+## Site installation
+if [[ "$DEVMODE" == "1" ]]; then
+    install-site "$USER-dev.judex.tech" "$JUDEX_SRC/judex.tech"
+else
+    install-site "judex.tech" "$JUDEX_SRC/judex.tech"
 fi
 
-init_filesystem 
-init_database
+## Testing installation
+cp -r "./Testing" "$JUDEX_SRC/Testing"
