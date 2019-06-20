@@ -23,7 +23,7 @@ function install-site() {
     ErrorLog \${APACHE_LOG_DIR}/error.log
 	CustomLog \${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>" >"$path"
-    cp -r "./judex.tech" "$site_path"
+    cp -r "./src/judex.tech" "$site_path"
     echo "Created site $servername on $site_path"
 }
 
@@ -157,7 +157,7 @@ JUDEX_SRC="$INSTALLATION_DIR/src"
 create-system-dir "$JUDEX_SRC"
 echo "\$JUDEX_SRC set to $JUDEX_SRC"
 
-JUDEX_RUN="/var/run/judex"
+JUDEX_RUN="/run/judex"
 echo "\$JUDEX_RUN set to $JUDEX_RUN"
 
 JUDEX_SUBMISSIONS="$JUDEX_DATA/Submissions"
@@ -204,4 +204,4 @@ else
 fi
 
 ## Testing installation
-cp -r "./Testing" "$JUDEX_SRC/Testing"
+cp -r "./src/Testing" "$JUDEX_SRC/Testing"
