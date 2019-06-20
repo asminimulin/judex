@@ -32,7 +32,17 @@ if (isset($_GET['id'])){
 <?php include_once "views/navbar.php";?>
 <center>
     <h1>Страница пользователя</h1>
-    <h2><?php echo $viewUserObj['login']." (".$viewUserObj['first_name']." ".$viewUserObj["last_name"].")"; ?></h2>
+    <h2><?php echo $viewUserObj['first_name']." (".$viewUserObj['login'].") ".$viewUserObj["last_name"]; ?></h2>
+    <?php
+        $query = "select date from auth where user_id = $viewUserId";
+        $result = mysqli_query($link,$query);
+        $tmpDate = mysqli_fetch_assoc($result)['date'];
+        mysqli_free_result($result);
+        if ($tmpDate){
+            echo "<h3>Последнее действие: $tmpDate</h3>";
+        }
+
+    ?>
     <h3>Рейтинг: <?php echo $viewUserObj['rating'];?></h3>
     <input type="button" class="btn green small" value="Покекать" onclick="alert('Кек, кек, кек');">
 </center>

@@ -29,44 +29,6 @@ if (isset($_GET["submission_id"])){
     <link rel="stylesheet" type="text/css" href="styles/style.css">
     <link href="js/prism/prism.css" rel="stylesheet">
     <title>Protocol</title>
-    <style>
-        .overlay {
-            transition: 0.5s;
-            background: #000;
-            position: fixed;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            z-index: 1000;
-            opacity: .5;
-        }
-        .visible {
-            transition: 0.5s;
-            background: rgba(255, 255, 255, 0.75);
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            border-radius: 10px;
-            margin-top: -200px;
-            overflow: hidden;
-            z-index: 2000;
-            width: 800px;
-            padding: 0px;
-            margin-left: -400px;
-        }
-        .content {
-            transition: 0.5s;
-            padding: 0 1em;
-            border-top: 1px solid #ccc;
-            border-bottom: 1px solid #ccc;
-            background: WhiteSmoke;
-            word-break: break-word;
-        }
-        .winTestViewHeader{
-            font: normal 1.1em "Trebuchet MS";
-        }
-    </style>
 </head>
 
 <body background="img/124.png">
