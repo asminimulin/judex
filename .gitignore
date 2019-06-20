@@ -1,7 +1,6 @@
 .vscode/
 conf.d/judex.conf
 Testing/__pycache__/
-Testing/debug-logs
-Archive/
-Submissions/
 .passwords
+scripts/docker-run.sh
+TODO
