@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+
+# Builtin imports
 import configparser
 import os
 import datetime

@@ -1,17 +1,21 @@
 #!/usr/bin/python3
+
+# Builtin imports
 import os
 import time
-import logger
-import connector
 import configparser
 import sys
+
+# Package imports
 from common import *
+import connector 
 
 BASE_TESTER_SYNC_NON_BLOCKING_DELAY = 0.2
 
 class BaseTester:
 
-    ''' Do not create instance of this class. It is available for inheritance and overrides. '''
+    ''' Do not create instance of this class. It is only available for inheritance and overrides. '''
+
     def __init_config(self):
         path = os.path.join(JUDEX_HOME, 'conf.d', 'judex.conf')
         self.config = configparser.ConfigParser()

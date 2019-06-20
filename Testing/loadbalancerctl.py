@@ -1,14 +1,17 @@
 #!/usr/bin/python3
 
+# Builtin imports
 import os
 import sys
 import subprocess
 import shutil
-from logger import Logger
 from configparser import ConfigParser
-from common import *
 import time
+
+# Package imports
 import connector
+from logger import Logger
+from common import *
 
 config = ConfigParser()
 config_path = os.path.join(JUDEX_HOME, 'conf.d', 'judex.conf')
@@ -52,7 +55,7 @@ def start():
 
     with open(config['loadbalancer']['pid_file'], 'w') as pid_file:
         pid_file.write(str(proc.pid))
-    print('LoadBalancer Started')
+    print('LoadBalancer started up')
     return proc.pid
 
 def stop():

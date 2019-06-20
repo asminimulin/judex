@@ -1,8 +1,13 @@
-from base_tester import BaseTester
+# Builtin imports
 import sys
-from submission_runner import SubmissionRunner
-import logger
 import traceback
+
+# Module imports
+from base_tester import BaseTester
+
+# Package imports
+import logger
+from submission_runner import SubmissionRunner
 
 class CustomTester(BaseTester):
     

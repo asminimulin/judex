@@ -1,12 +1,13 @@
 import pymysql
 import configparser
 import os
-import logger
 import subprocess
 import random
-import connector
 import time
+
 from common import *
+import logger
+import connector
  
 LOAD_BALANCER_SYNC_NON_BLOCKING_DELAY = 0.2
 
@@ -103,5 +104,5 @@ class LoadBalancer:
         self.testers.append(conn)
 
 if __name__ == "__main__":
-    lb = LoadBalancer(3)
+    lb = LoadBalancer(1)
     lb.run()
