@@ -203,8 +203,7 @@ JUDEX_ARCHIVE="$JUDEX_DATA/Archive"
 create-system-dir "$JUDEX_ARCHIVE"
 echo "\$JUDEX_ARCHIVE set to $JUDEX_ARCHIVE"
 
-VERSION_FILE="$JUDEX_SRC/version"
-echo "$VERSION" >"$VERSION_FILE"
+echo "$VERSION" >"$INSTALLATION_DIR/version"
 
 chown $USER:$USER -R "$JUDEX_HOME"
 
