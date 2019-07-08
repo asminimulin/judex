@@ -17,12 +17,12 @@ function _start {
     echo "Start"
     echo "Args: $@"
     a2ensite judex.tech.conf
-    if [ ! systemctl is-active --quiet apache2 ]; then
+    if ! systemctl is-active --quiet apache2; then
       systemctl start apache2
     else
       systemctl restart apache2
     fi
-    if [ ! systemctl is-active --quiet mysql ]; then
+    if ! systemctl is-active --quiet mysql; then
       systemctl start mysql
     fi
     php enmod mysqli
