@@ -25,7 +25,7 @@ function _start {
     if ! systemctl is-active --quiet mysql; then
       systemctl start mysql
     fi
-    php enmod mysqli
+    phpenmod mysqli
 }
 
 function _stop {
