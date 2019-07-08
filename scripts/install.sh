@@ -221,7 +221,7 @@ pip3 install -r "$DEPENDENCIES/python3"
 
 echo "Initializing database"
 service mysql start
-[ mysql/init-database.sh init.sql ../../res/mysql-dump.sql judex ]
+mysql/init-database.sh init.sql ../../res/mysql-dump.sql judex
 echo "Database successfully initialized"
 
 # Copying code
