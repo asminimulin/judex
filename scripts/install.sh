@@ -122,27 +122,6 @@ create-system-dir "$INSTALLATION_DIR"
 USER="judex-master"
 DEVMODE=0
 
-<< --SKIP--
-while [[ $# -gt 0 ]]; do
-    arg="$1"
-    case $arg in
-        "--user")
-            shift
-            USER="$1"
-            shift
-        ;;
-        "--dev")
-            DEVMODE=1
-            shift
-        ;;
-        *)
-            echo "Unknow option $arg"
-            exit 1
-        ;;
-    esac
-done
---SKIP--
-
 # Creating linux user if necessary
 if ! id -u $USER &>/dev/null; then
     echo "Linux user $USER will be created"
@@ -242,20 +221,7 @@ pip3 install -r "$DEPENDENCIES/python3"
 
 echo "Initializing database"
 service mysql start
-mysql <<CODE
-  CREATE USER IF NOT EXISTS `judex-master`
-    IDENTIFIED BY "password";
-  CREATE DATABASE IF NOT EXISTS judex
-    CHARACTER SET utf8
-    COLLATE utf8_general_ci;
-  GRANT ALL ON `judex`.*
-    TO "judex-master"@"localhost"
-    IDENTIFIED BY "password";
-  GRANT ALL ON `judex`.*
-    TO "judex-master"@"localhost"
-    IDENTIFIED BY "password";
-CODE
-mysql judex < "res/mysql-dump.sql"
+[ mysql/init-database.sh init.sql ../../res/mysql-dump.sql judex ]
 echo "Database successfully initialized"
 
 # Copying code
