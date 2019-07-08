@@ -1,9 +1,11 @@
 #!/bin/bash
 
 #################################################
+#
 # Command line control script.
 # Use it to control Judex system.
 # It requires root privileges.
+#
 #################################################
 
 function error {
@@ -12,6 +14,8 @@ function error {
 }
 
 [[ "$EUID" != "0" ]] && error "Root privileges required"
+
+source <(grep src= "/etc/judex/judex.conf")
 
 function _start {
     echo "Start"
@@ -26,11 +30,13 @@ function _start {
       systemctl start mysql
     fi
     phpenmod mysqli
+    src/Testing/loadbalancerctl.py start
 }
 
 function _stop {
     echo "Stop"
     echo "Args: $@"
+    src/Testing/loadbalancerctl.pu stop
 }
 
 function _restart {
