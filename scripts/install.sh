@@ -210,8 +210,9 @@ password=password
 dbname=judex
 
 [judexd]
-pid_file=$JUDEX_RUN/pid_file
+pid_file=$JUDEX_RUN/judexd.pid
 testers=$JUDEX_RUN/testers
+socket=$JUDEX_RUN/judexd.sock
 
 "
 filename="$JUDEX_CONFIG/judex.conf"

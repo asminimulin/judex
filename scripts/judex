@@ -30,13 +30,13 @@ function _start {
       systemctl start mysql
     fi
     phpenmod mysqli
-    src/Testing/loadbalancerctl.py start
+    src/Testing/judex-ctl.py start
 }
 
 function _stop {
     echo "Stop"
     echo "Args: $@"
-    src/Testing/loadbalancerctl.pu stop
+    src/Testing/judex-ctl.py stop
 }
 
 function _restart {

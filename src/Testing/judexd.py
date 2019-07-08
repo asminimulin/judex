@@ -1,48 +1,41 @@
+#!/usr/bin/python3
+
 import pymysql
 import configparser
 import os
 import subprocess
 import random
 import time
+import socket
 
 from common import *
 import logger
-import connector
  
 LOAD_BALANCER_SYNC_NON_BLOCKING_DELAY = 0.2
 
 class LoadBalancer:
-
     def __get_db_connector(self):
-        return pymysql.connect(self.config['mysql']['host'], self.config['mysql']['user'], self.config['mysql']['password'], self.config['mysql']['dbname'])
+        return pymysql.connect(
+                    self.config['database']['host'],
+                    self.config['database']['user'],
+                    self.config['database']['password'],
+                    self.config['database']['dbname'])
 
-    def __init_testers(self, testers_count):
-        assert(testers_count > 0)
+    def __init__(self):
+        self.pid = os.getpid()
+        self.config = configparser.ConfigParser()
+        self.config.read("/etc/judex/judex.conf")
+        self.uds = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.uds.bind(self.config['judexd']['socket'])
+        self.uds.listen()
+        self.logger = logger.Logger('judexd')
         self.testers = []
-        for tester_id in range(testers_count):
-            self.add_tester(tester_id)
-
-    def __init_config(self):
-        self.config = configparser.ConfigParser(os.environ)
-        self.config.read(os.path.join(JUDEX_HOME, 'conf.d', 'judex.conf'))
-
-    def __init_fs(self):
-        os.mkdir(self.testers_dir)
-
-    def __init__(self, testers_count=1):
-        self.__init_config()
-        self.testers_dir = self.config['testing']['testers_dir']
-        self.__init_fs()
-        self.logger = logger.Logger('LoadBalancer')
-        self.connector = connector.ChildConnector(self.config['loadbalancer']['in_pipe'], self.config['loadbalancer']['out_pipe'])
-        self.__init_testers(testers_count)
-        self.logger.log('Created with {} testers'.format(testers_count))
 
     def stop(self):
-        self.logger.log('stopping testers...')
-        for conn in self.testers:
-            conn.send_message('stop')
-        self.logger.log('stopped')
+        self.logger.log('Stopping testers...')
+        for client in self.testers:
+            client.send('stop')
+        self.logger.log('Stopped')
         exit(0)
 
     def has_submission(self):
@@ -73,14 +66,7 @@ class LoadBalancer:
         random.choice(self.testers).send_message('test {} {} {}'.format(submission['id'], submission['problem_id'], submission['language']))
 
     def run(self):
-        self.logger.log('LoadBalancer event loop started')
-        while True:
-            if self.connector.has_message():
-                self.__process_command(self.connector.get_message())
-            elif self.has_submission():
-                self.check_next_submission()
-            else:
-                time.sleep(LOAD_BALANCER_SYNC_NON_BLOCKING_DELAY)
+        pass
 
     def __process_command(self, message):
         self.logger.log('Got message <{}>'.format(message))
@@ -104,5 +90,5 @@ class LoadBalancer:
         self.testers.append(conn)
 
 if __name__ == "__main__":
-    lb = LoadBalancer(1)
+    lb = LoadBalancer()
     lb.run()
