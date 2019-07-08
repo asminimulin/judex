@@ -1,6 +1,18 @@
 #!/bin/bash
 
-#*****************Functions************************
+VERSION=1.0
+
+if [ "$EUID" != "0" ]; then
+    echo "Installation requires root privileges."
+    exit 1
+fi
+
+if [ "$0" != "./install.sh" ]; then
+  cd "$(dirname $0)/.."
+else
+  cd ..
+fi
+# Now we are at $JUDEX_HOME
 
 function install-site() {
     # Args:
@@ -67,12 +79,8 @@ function create-system-dir() {
     fi
 }
 
-#********************************************************
 
-if [[ $EUID -ne 0 ]]; then
-    echo "Installation needs root privileges."
-    exit 1
-fi
+DEPENDENCIES="./dependencies"
 
 INSTALLATION_DIR="/opt/judex"
 
@@ -81,15 +89,10 @@ if [ -d "$INSTALLATION_DIR" ]; then
     exit 1
 fi
 
-if [[ "$0" != "scripts/install.sh" ]]; then
-    error "Installation must be ran as ./scripts/install.sh"
-    exit 1
-fi
-
 create-system-dir "$INSTALLATION_DIR"
 
 USER="judex-master"
-DEVMODE=1
+DEVMODE=0
 
 << --SKIP--
 while [[ $# -gt 0 ]]; do
@@ -195,7 +198,35 @@ echo "$config" >"$filename"
 echo "Created config file in $filename"
 unset filename config
 
+# Installing Dependencies
+echo "Installing dependencies"
+apt update
+apt install tzdata -y # That package needs to be installed separetly. I had trouble while testing script in docker.
+xargs --arg-file="$DEPENDENCIES/distro" apt install -y
+pip3 install -r "$DEPENDENCIES/python3"
+
+echo "Initializing database"
+service mysql start
+mysql <<CODE
+  CREATE USER IF NOT EXISTS `judex-master`
+    IDENTIFIED BY "password";
+  CREATE DATABASE IF NOT EXISTS judex
+    CHARACTER SET utf8
+    COLLATE utf8_general_ci;
+  GRANT ALL ON `judex`.*
+    TO "judex-master"@"localhost"
+    IDENTIFIED BY "password";
+  GRANT ALL ON `judex`.*
+    TO "judex-master"@"localhost"
+    IDENTIFIED BY "password";
+CODE
+mysql judex < "res/mysql-dump.sql"
+echo "Database successfully initialized"
+
 # Copying code
+## Control script
+cp "scripts/judex" "/usr/bin"
+
 ## Site installation
 if [[ "$DEVMODE" == "1" ]]; then
     install-site "$USER-dev.judex.tech" "$JUDEX_SRC/judex.tech"

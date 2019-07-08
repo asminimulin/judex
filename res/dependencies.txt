@@ -1,5 +1,0 @@
-python3
-mysql-server
-php
-apache2
-php-mysqli
