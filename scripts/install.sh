@@ -79,16 +79,44 @@ function create-system-dir() {
     fi
 }
 
+function getConfirm() {
+  echo "Do you want to continue?[y/n]"
+  local ack
+  read ack
+  case "$ack" in
+    n)
+      return 1
+    ;;
+    no)
+      return 1
+    ;;
+    N)
+      return 1
+    ;;
+    No)
+      return 1
+    ;;
+    NO)
+      return 1
+  esac
+  return 0
+}
+
 
 DEPENDENCIES="./dependencies"
 
 INSTALLATION_DIR="/opt/judex"
 
-if [ -d "$INSTALLATION_DIR" ]; then
-    echo "System Judex has already installed."
-    exit 1
+if [ -f "$INSTALLATION_DIR/version" ]; then
+    local version="$(cat '$INSTALLATION_DIR/version')"
+    echo "System Judex v$version has already installed."
+    if ! getConfirm; then
+      echo "Installation aborted"
+      exit 1
+    fi
 fi
 
+rm -rf "$INSTALLATION_DIR"
 create-system-dir "$INSTALLATION_DIR"
 
 USER="judex-master"
@@ -175,6 +203,9 @@ JUDEX_ARCHIVE="$JUDEX_DATA/Archive"
 create-system-dir "$JUDEX_ARCHIVE"
 echo "\$JUDEX_ARCHIVE set to $JUDEX_ARCHIVE"
 
+VERSION_FILE="$JUDEX_SRC/version"
+echo "$VERSION" >"$VERSION_FILE"
+
 chown $USER:$USER -R "$JUDEX_HOME"
 
 # Create config file
@@ -183,7 +214,7 @@ config="
 # Auto-generated config file.
 # Created: $(date '+%Y/%m/%d %H:%M:%S').
 
-[judex]
+[global]
 JUDEX_HOME=$JUDEX_HOME
 JUDEX_DATA=$JUDEX_DATA
 JUDEX_SRC=$JUDEX_SRC
@@ -192,6 +223,11 @@ JUDEX_SUBMISSIONS=$JUDEX_SUBMISSIONS
 JUDEX_PROBLEMS=$JUDEX_PROBLEMS
 JUDEX_ARCHIVE=$JUDEX_ARCHIVE
 JUDEX_CONFIG=$JUDEX_CONFIG
+
+[judexd]
+pid_file=$JUDEX_RUN/pid_file
+testers=$JUDEX_RUN/testers
+
 "
 filename="$JUDEX_CONFIG/judex.conf"
 echo "$config" >"$filename"
