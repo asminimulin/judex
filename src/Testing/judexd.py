@@ -7,6 +7,7 @@ import subprocess
 import random
 import time
 import socket
+import shutil
 
 from common import *
 import logger
@@ -23,18 +24,31 @@ class LoadBalancer:
 
     def __init__(self):
         self.pid = os.getpid()
+        # Reading config
         self.config = configparser.ConfigParser()
-        self.config.read("/etc/judex/judex.conf")
+        self.config.read('/etc/judex/judex.conf')
+        # Filesystem
+        if os.path.exists(self.config['global']['runtime']):
+            shutil.rmtree(self.config['global']['runtime'])
+        os.mkdir(self.config['global']['runtime'])
+        with open(self.config['judexd']['pid_file'], 'w') as pid_file:
+            pid_file.write(str(self.pid))
+        # Creating socket
         self.uds = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.uds.bind(self.config['judexd']['socket'])
         self.uds.listen()
+        # Logging
         self.logger = logger.Logger('judexd')
+        # Testers
         self.testers = []
 
     def stop(self):
         self.logger.log('Stopping testers...')
         for client in self.testers:
             client.send('stop')
+        os.remove(self.config['judexd']['pid_file'])
+        self.uds.close()
+        shutil.rmtree(self.config['global']['runtime'])
         self.logger.log('Stopped')
         exit(0)
 
@@ -63,16 +77,26 @@ class LoadBalancer:
 
     def check_next_submission(self):
         submission = self.get_next_submission()
-        random.choice(self.testers).send_message('test {} {} {}'.format(submission['id'], submission['problem_id'], submission['language']))
+        print('has submission {}'.format(submission))
+        return
+        random.choice(self.testers).send('test {} {} {}'.format(submission['id'], submission['problem_id'], submission['language']))
 
     def run(self):
-        pass
+        conn, addr = self.uds.accept()
+        while True:
+            message = conn.recv(1024)
+            if message:
+                self.__process_message(message)
+            elif self.has_submission():
+                self.check_next_submission()
+            else:
+                time.sleep(0.3)
 
-    def __process_command(self, message):
+    def __process_message(self, message):
         self.logger.log('Got message <{}>'.format(message))
-        if message == 'add-tester':
+        if message == b'add-tester':
             pass
-        elif message == 'stop':
+        elif message == b'stop':
             self.stop()
 
     def add_tester(self, tester_id, tester_type='custom_tester.py'):

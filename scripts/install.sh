@@ -183,6 +183,9 @@ JUDEX_ARCHIVE="$JUDEX_DATA/Archive"
 create-system-dir "$JUDEX_ARCHIVE"
 echo "\$JUDEX_ARCHIVE set to $JUDEX_ARCHIVE"
 
+JUDEX_LOG="/var/log/judex"
+create-system-dir "$JUDEX_LOG"
+
 echo "$VERSION" >"$INSTALLATION_DIR/version"
 
 chown $USER:$USER -R "$JUDEX_HOME"
@@ -213,6 +216,9 @@ dbname=judex
 pid_file=$JUDEX_RUN/judexd.pid
 testers=$JUDEX_RUN/testers
 socket=$JUDEX_RUN/judexd.sock
+
+[log]
+file=$JUDEX_LOG/log
 
 "
 filename="$JUDEX_CONFIG/judex.conf"

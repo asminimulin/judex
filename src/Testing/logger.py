@@ -9,8 +9,10 @@ class Logger:
 
     def __init__(self, who):
         cfg = configparser.ConfigParser()
-        cfg.read(os.path.join(os.environ.get('JUDEX_HOME'), 'conf.d', 'judex.conf'))
-        self.path = cfg['log']['path']
+        cfg.read('/etc/judex/judex.conf')
+        self.path = cfg['log']['file']
+        if not os.path.exists(cfg['log']['file']):
+            open(cfg['log']['file'], 'w').close()
         self.who = who
 
     def log(self, message):

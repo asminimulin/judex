@@ -25,31 +25,21 @@ def is_running():
     if not pid:
         return False
     try:
+        pid = int(pid)
         # Kill with signal 0 does not stop the process. (See man kill)
         # But it handles "No such process error".
         # So we can use it to understand that process is alive or not.
-        kill(pid, 0)
+        os.kill(pid, 0)
         return True
-    except:
+    except OSError as r:
         return False
-
-#def create_file(path, directory=False, fifo=False, text_file=False):
-#    if directory + fifo + text_file != 1:
-#        raise Exception('create_file expects that exactly one option is True')
-#    if not os.path.exists(path):
-#        if directory:
-#            os.mkdir(path)
-#        elif fifo:
-#            os.mkfifo(path)
-#        else:
-#            open(path, 'w').close()
 
 def start():
     if is_running():
         print('Judexd is already running')
         return 1
 
-    proc = subprocess.run('/opt/judex/src/Testing/judexd.py')
+    proc = subprocess.Popen('/opt/judex/src/Testing/judexd.py')
     time.sleep(1.5)
     if is_running():
         print('judexd has started up')
@@ -63,15 +53,15 @@ def stop():
         print('judexd is not running')
         return 1
     try:
-        client = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+        client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         client.connect(config['judexd']['socket'])
-        client.send('stop'.encode('utf-8'))
+        client.send('stop')
         client.close()
         print('judexd has stopped')
         return 0
     except:
         print('Error occured')
-        exit(1)
+        return 1
 
 def restart():
     stop()
