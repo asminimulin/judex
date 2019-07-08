@@ -25,8 +25,8 @@ if [ "$(id -u)" -ne "0" ]; then
   exit 1
 fi
 
-dump=$1
-init=$2
+init=$1
+dump=$2
 database=$3
 
 mysql <"$init"

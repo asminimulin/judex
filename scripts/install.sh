@@ -108,12 +108,13 @@ DEPENDENCIES="./dependencies"
 INSTALLATION_DIR="/opt/judex"
 
 if [ -f "$INSTALLATION_DIR/version" ]; then
-    local version="$(cat '$INSTALLATION_DIR/version')"
+    version="$(cat "$INSTALLATION_DIR/version")"
     echo "System Judex v$version has already installed."
     if ! getConfirm; then
       echo "Installation aborted"
       exit 1
     fi
+    unset version
 fi
 
 rm -rf "$INSTALLATION_DIR"
@@ -193,14 +194,20 @@ config="
 # Created: $(date '+%Y/%m/%d %H:%M:%S').
 
 [global]
-JUDEX_HOME=$JUDEX_HOME
-JUDEX_DATA=$JUDEX_DATA
-JUDEX_SRC=$JUDEX_SRC
-JUDEX_RUN=$JUDEX_RUN
-JUDEX_SUBMISSIONS=$JUDEX_SUBMISSIONS
-JUDEX_PROBLEMS=$JUDEX_PROBLEMS
-JUDEX_ARCHIVE=$JUDEX_ARCHIVE
-JUDEX_CONFIG=$JUDEX_CONFIG
+home=$JUDEX_HOME
+data=$JUDEX_DATA
+src=$JUDEX_SRC
+runtime=$JUDEX_RUN
+submissions=$JUDEX_SUBMISSIONS
+problems=$JUDEX_PROBLEMS
+archive=$JUDEX_ARCHIVE
+config=$JUDEX_CONFIG
+
+[database]
+host=localhost
+user=judex-master
+password=password
+dbname=judex
 
 [judexd]
 pid_file=$JUDEX_RUN/pid_file
@@ -221,7 +228,7 @@ pip3 install -r "$DEPENDENCIES/python3"
 
 echo "Initializing database"
 service mysql start
-mysql/init-database.sh init.sql ../../res/mysql-dump.sql judex
+scripts/mysql/init.sh "scripts/mysql/init.sql" "res/mysql-dump.sql" "judex"
 echo "Database successfully initialized"
 
 # Copying code
