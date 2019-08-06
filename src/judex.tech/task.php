@@ -1,11 +1,11 @@
 <?php
- include_once "include/standart.php";
- include_once "include/functions.php";
+include_once "include/standart.php";
+include_once "include/functions.php";
 
 if (isset($_GET['id'])){
     $taskId = $_GET['id'];
-    $problemPath = getProblemPath($taskId);
-    if (!file_exists($problemPath) || $taskId <= 0){
+    $problem_path = getProblemPath($taskId);
+    if (!file_exists($problem_path) || $taskId <= 0){
         header("Location: 404.php");
     } else {
         $jsonText = file_get_contents($problem_path."/statement.json");

@@ -8,6 +8,7 @@ import shutil
 from configparser import ConfigParser
 import time
 import socket
+import json
 
 # Judex imports
 from logger import Logger
@@ -55,7 +56,7 @@ def stop():
     try:
         client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         client.connect(config['judexd']['socket'])
-        client.send('stop')
+        client.send(json.dumps({'method': 'stop'}).encode('utf-8'))
         client.close()
         print('judexd has stopped')
         return 0

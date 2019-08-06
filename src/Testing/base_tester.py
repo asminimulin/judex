@@ -2,60 +2,55 @@
 
 # Builtin imports
 import os
-import time
 import configparser
-import sys
+import threading
+import json
+import socket
+import queue
+import time
 
-# Package imports
-from common import *
-import connector 
-
-BASE_TESTER_SYNC_NON_BLOCKING_DELAY = 0.2
+import logger
 
 class BaseTester:
-
     ''' Do not create instance of this class. It is only available for inheritance and overrides. '''
-
-    def __init_config(self):
-        path = os.path.join(JUDEX_HOME, 'conf.d', 'judex.conf')
+    def __init__(self):
+        self.id = os.getpid()
         self.config = configparser.ConfigParser()
-        self.config.read(path)
-
-    def __init_fs(self):
-        self.dir = os.path.join(self.config['testing']['testers_dir'], str(self.id))
+        self.config.read('/etc/judex/judex.conf')
+        self.dir = os.path.join(self.config['judexd']['testers'], str(self.id))
         os.mkdir(self.dir)
-
-    def __init__(self, tester_id):
-        self.id = tester_id
-        self.__init_config()
-        self.__init_fs()
-        self.connector = connector.ChildConnector(
-                            os.path.join(self.dir, 'in.pipe'),
-                            os.path.join(self.dir, 'out.pipe') )
+        self.logger = logger.Logger('BaseTester')
         self.submission = None
+        self.testing_queue = queue.Queue(128)
+        self.testing_thread = threading.Thread(target=self.__test, daemon=True)
+        self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.socket.connect(self.config['judexd']['socket'])
 
-    # Non-blocking, Syncronized
     def run(self):
+        self.logger.log('Started')
+        self.testing_thread.start()
+
         while True:
-            if self.connector.has_message():
-                self.process_message(self.connector.get_message())
+            message = str(self.socket.recv(1024).decode('utf-8'))
+            request = dict(json.loads(message))
+            print(request)
+
+            if request['method'] == 'test':
+                print('Base tester caught "test"')
+                self.testing_queue.put(request['submission'])
+            elif request['method'] == 'stop':
+                self.logger.log('stopped')
+                exit(0)
             else:
-                time.sleep(BASE_TESTER_SYNC_NON_BLOCKING_DELAY)
+                print('Unhandled message')
+                self.logger.log('Unhandled message: {}'.format(message))
 
-    def process_message(self, message):
-        self.logger.log('Message processing. Message=<' + message + '>')
-        argv = message.split()
-        if argv[0] == 'test':
-            if len(argv) < 4:
-                self.logger.log('Error occured. Command test must have at least 3 arguments')
-                return
-            self.test(argv[1], argv[2], argv[3])
-        elif argv[0] == 'stop':
-            exit(0)
+    def __test(self):
+        while True:
+            if not self.testing_queue.empty():
+                self.test(self.testing_queue.get())
+                time.sleep(0.1)
 
-    def test(self, submission_id, problem_id, language):
-        ''' Every nested class must implement this fucntion to basically testing  submissions. '''
+    def test(self, submission):
+        ''' Every nested class must implement this function to basically testing  submissions. '''
         raise NotImplementedError('test')
-
-    def emit(self, message):
-        self.connector.send_message(message)

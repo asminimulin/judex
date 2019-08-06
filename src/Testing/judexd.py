@@ -8,19 +8,14 @@ import random
 import time
 import socket
 import shutil
+import threading
+import json
+import asyncio
 
-from common import *
 import logger
- 
-LOAD_BALANCER_SYNC_NON_BLOCKING_DELAY = 0.2
 
-class LoadBalancer:
-    def __get_db_connector(self):
-        return pymysql.connect(
-                    self.config['database']['host'],
-                    self.config['database']['user'],
-                    self.config['database']['password'],
-                    self.config['database']['dbname'])
+
+class LoadBalancer():
 
     def __init__(self):
         self.pid = os.getpid()
@@ -33,21 +28,62 @@ class LoadBalancer:
         os.mkdir(self.config['global']['runtime'])
         with open(self.config['judexd']['pid_file'], 'w') as pid_file:
             pid_file.write(str(self.pid))
+        os.mkdir(self.config['judexd']['testers'])
         # Creating socket
-        self.uds = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.uds.bind(self.config['judexd']['socket'])
-        self.uds.listen()
+        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.sock.bind(self.config['judexd']['socket'])
+        self.sock.listen()
+        # self.sock.settimeout(0.2)
         # Logging
         self.logger = logger.Logger('judexd')
         # Testers
         self.testers = []
+        # Message thread
+        self.message_thread = threading.Thread(target=self.receive_message)
+        # Thread requirements
+        self.lock = threading.Lock()
+        self.exit_event = threading.Event()
+
+    def __get_db_connector(self):
+        return pymysql.connect(
+                    self.config['database']['host'],
+                    self.config['database']['user'],
+                    self.config['database']['password'],
+                    self.config['database']['dbname'])
+
+    def receive_message(self):
+        while True:
+            client, addr = None, None
+            try:
+                client, addr = self.sock.accept()
+                message = str(client.recv(1024).decode('utf-8'))
+                self.handle_message(message)
+            except socket.timeout:
+                pass
+
+    def handle_message(self, message: str):
+        self.logger.log('Got message <{}>'.format(message))
+        print('Got message <{}>'.format(message))
+        request = dict(json.loads(message))
+        if request['method'] == 'add-tester':
+            print('Add-tester')
+            self.add_tester()
+        elif request['method'] == 'stop':
+            print('Stop')
+            self.stop()
+        else:
+            print('Unknown message')
+
 
     def stop(self):
+        print('Stopping')
+        with self.lock:
+            self.exit_event.set()
+            self.sock.close()
         self.logger.log('Stopping testers...')
+        stop_msg = json.dumps({'method': 'stop'})
         for client in self.testers:
-            client.send('stop')
-        os.remove(self.config['judexd']['pid_file'])
-        self.uds.close()
+            client.send(stop_msg.encode('utf-8'))
         shutil.rmtree(self.config['global']['runtime'])
         self.logger.log('Stopped')
         exit(0)
@@ -77,42 +113,34 @@ class LoadBalancer:
 
     def check_next_submission(self):
         submission = self.get_next_submission()
-        print('has submission {}'.format(submission))
-        return
-        random.choice(self.testers).send('test {} {} {}'.format(submission['id'], submission['problem_id'], submission['language']))
+        query = json.dumps({
+            'method': 'test',
+            'submission': submission
+        })
+        if (len(self.testers) == 0):
+            print('No available tetsters for this submission: ', submission)
+        else:
+            random.choice(self.testers).send(query.encode('utf-8'))
 
     def run(self):
-        conn, addr = self.uds.accept()
+        self.logger.log('Started')
+        self.message_thread.start()
         while True:
-            message = conn.recv(1024)
-            if message:
-                self.__process_message(message)
-            elif self.has_submission():
+            with self.lock:
+                if self.exit_event.is_set():
+                    break
+            if self.has_submission():
                 self.check_next_submission()
-            else:
-                time.sleep(0.3)
+        self.message_thread.join()
 
-    def __process_message(self, message):
-        self.logger.log('Got message <{}>'.format(message))
-        if message == b'add-tester':
-            pass
-        elif message == b'stop':
-            self.stop()
-
-    def add_tester(self, tester_id, tester_type='custom_tester.py'):
-        tester_dir = os.path.join(self.config['testing']['testers_dir'], '{}'.format(tester_id))
-        tester_in = os.path.join(tester_dir, 'in.pipe')
-        tester_out = os.path.join(tester_dir, 'out.pipe')
-        tester_path = os.path.join(JUDEX_HOME, 'Testing', tester_type)
-        subprocess.Popen(['python3', tester_path, str(tester_id)])
-
-        time.sleep(2)
-
-        # We must create connector. If we dont then loadbalancer.py would wait for opening fifos in it's __init__ function.
-        # Fix that behaviour is nice issue
-        conn = connector.ParentConnector(tester_out, tester_in)
-        self.testers.append(conn)
+    def add_tester(self, tester_type='custom_tester.py'):
+        executable = os.path.join(self.config['global']['src'], 'Testing/custom_tester.py')
+        proc = subprocess.Popen(executable)
+        print('subprocess created')
+        tester, addr  = self.sock.accept()
+        print('Tester created')
+        self.testers.append(tester)
 
 if __name__ == "__main__":
-    lb = LoadBalancer()
-    lb.run()
+    thread = LoadBalancer()
+    thread.run()

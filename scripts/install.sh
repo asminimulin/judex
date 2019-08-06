@@ -23,18 +23,9 @@ function install-site() {
     local servername=$1
     local path="/etc/apache2/sites-available/$servername.conf"
     local site_path=$2
-    echo \
-"<VirtualHost *:80>
-    ServerName $servername
-    DocumentRoot $site_path
-    <Directory $site_path>
-        Options Indexes FollowSymLinks
-        AllowOverride None
-        Require all granted
-    </Directory>
-    ErrorLog \${APACHE_LOG_DIR}/error.log
-	CustomLog \${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>" >"$path"
+    cp "res/apache2-site-configuration.conf" "$path"
+    sed -i "s#VAR_SERVERNAME#$servername#g" "$path"
+    sed -i "s#VAR_SITE_ROOT#$site_path#g" "$path"
     cp -r "./src/judex.tech" "$site_path"
     echo "Created site $servername on $site_path"
 }
@@ -151,87 +142,51 @@ else
     echo "User $USER exists"
 fi
 
+# Creating group for data
+groupadd judex-data
+
 # Initializing necessary filesystem
 JUDEX_HOME="/home/$USER/.judex"
 create-system-dir "$JUDEX_HOME"
-echo "\$JUDEX_HOME set to $JUDEX_HOME"
 
 JUDEX_CONFIG="/etc/judex"
 create-system-dir "$JUDEX_CONFIG"
-echo "\$JUDEX_CONFIG set to $JUDEX_CONFIG"
-
-JUDEX_DATA="$JUDEX_HOME/data"
-create-system-dir "$JUDEX_DATA"
-echo "\$JUDEX_DATA set to $JUDEX_DATA"
 
 JUDEX_SRC="$INSTALLATION_DIR/src"
 create-system-dir "$JUDEX_SRC"
-echo "\$JUDEX_SRC set to $JUDEX_SRC"
+
+JUDEX_DATA="/var/lib/judex"
+create-system-dir "$JUDEX_DATA"
 
 JUDEX_RUN="/run/judex"
-echo "\$JUDEX_RUN set to $JUDEX_RUN"
 
 JUDEX_SUBMISSIONS="$JUDEX_DATA/Submissions"
 create-system-dir "$JUDEX_SUBMISSIONS"
-echo "\$JUDEX_SUBMISSIONS set to $JUDEX_SUBMISSIONS"
 
 JUDEX_PROBLEMS="$JUDEX_DATA/Problems"
 create-system-dir "$JUDEX_PROBLEMS"
-echo "\$JUDEX_PROBLEMS set to $JUDEX_PROBLEMS"
+tar -xf "res/problems.tar" -C "$JUDEX_DATA"
 
 JUDEX_ARCHIVE="$JUDEX_DATA/Archive"
 create-system-dir "$JUDEX_ARCHIVE"
-echo "\$JUDEX_ARCHIVE set to $JUDEX_ARCHIVE"
 
 JUDEX_LOG="/var/log/judex"
 create-system-dir "$JUDEX_LOG"
 
 echo "$VERSION" >"$INSTALLATION_DIR/version"
 
-chown $USER:$USER -R "$JUDEX_HOME"
+chown -R "$USER":"judex-data" "$JUDEX_DATA"
 
-# Create config file
-echo "Creating judex.conf..."
-config="
-# Auto-generated config file.
-# Created: $(date '+%Y/%m/%d %H:%M:%S').
-
-[global]
-home=$JUDEX_HOME
-data=$JUDEX_DATA
-src=$JUDEX_SRC
-runtime=$JUDEX_RUN
-submissions=$JUDEX_SUBMISSIONS
-problems=$JUDEX_PROBLEMS
-archive=$JUDEX_ARCHIVE
-config=$JUDEX_CONFIG
-
-[database]
-host=localhost
-user=judex-master
-password=password
-dbname=judex
-
-[judexd]
-pid_file=$JUDEX_RUN/judexd.pid
-testers=$JUDEX_RUN/testers
-socket=$JUDEX_RUN/judexd.sock
-
-[log]
-file=$JUDEX_LOG/log
-
-"
-filename="$JUDEX_CONFIG/judex.conf"
-echo "$config" >"$filename"
-echo "Created config file in $filename"
-unset filename config
+# Creating configs
+rm -rf "/etc/judex"
+cp -r "res/conf/" "/etc/judex"
+sed -i "s#VAR_CREATING_TIMESTAMP#$(date '+%y/%m/%d %h:%m:%s')#g" "/etc/judex/judex.conf"
 
 # Installing Dependencies
 echo "Installing dependencies"
-apt update
-apt install tzdata -y # That package needs to be installed separetly. I had trouble while testing script in docker.
-xargs --arg-file="$DEPENDENCIES/distro" apt install -y
-pip3 install -r "$DEPENDENCIES/python3"
+apt -qq update
+xargs --arg-file="$DEPENDENCIES/distro" apt -qq install -y
+pip3 -q install -r "$DEPENDENCIES/python3"
 
 echo "Initializing database"
 service mysql start

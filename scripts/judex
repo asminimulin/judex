@@ -18,8 +18,6 @@ function error {
 source <(grep src= "/etc/judex/judex.conf")
 
 function _start {
-    echo "Start"
-    echo "Args: $@"
     a2ensite judex.tech.conf
     if ! systemctl is-active --quiet apache2; then
       systemctl start apache2
@@ -34,14 +32,11 @@ function _start {
 }
 
 function _stop {
-    echo "Stop"
-    echo "Args: $@"
     ( $src/Testing/testing-ctl.py stop )
 }
 
 function _restart {
-    echo "Restart"
-    echo "Args: $@"
+    ( $src/Testing/testing-ctl.py restart )
 }
 
 args=()

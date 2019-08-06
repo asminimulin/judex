@@ -1,19 +1,23 @@
 <?php
 
 // TODO:
-// refactor to make it includable in task.php
+// Create js script to doing such things
 
 include_once "../include/global.php";
 
-$link = mysqli_connect($CONF["mysql"]["host"],
-                        $CONF["mysql"]["user"],
-                        $CONF["mysql"]["password"],
-                        $CONF["mysql"]["dbname"]);
+
+$link = mysqli_connect($CONF["database"]["host"],
+                        $CONF["database"]["user"],
+                        $CONF["database"]["password"],
+                        $CONF["database"]["dbname"]);
+if (!$link) {
+    echo mysqli_error($link);
+    exit(1);
+}
 
 function upload($submission_id, $language) {
     global $CONF;
-    global $JUDEX_HOME;
-    $submission_dir = $CONF["testing"]["submissions_dir"] . '/' . "$submission_id";
+    $submission_dir = $CONF["global"]["submissions"] . '/' . "$submission_id";
     mkdir($submission_dir, 0770, TRUE);	
 
     $output_dir = "$submission_dir/output";
@@ -23,12 +27,12 @@ function upload($submission_id, $language) {
     $submission_result = array();
     $submission_result["status"] = "IQ";
     $fp = fopen($result_path, 'w');
-    fwrite($fp, '{"status": "IQ"}');
+    fwrite($fp, "{\"status\": \"IQ\"}");
     fclose($fp);
     chmod($path_to_dir, 0777);
     chmod($path_to_file, 0777);
 	
-    $lang_conf = parse_ini_file("$JUDEX_HOME/conf.d/language.conf", true);
+    $lang_conf = parse_ini_file("/etc/judex/language.ini", true);
     $filename = "$submission_dir/$submission_id".$lang_conf[$language]["extension"];
     $uploaded = move_uploaded_file($_FILES['uploading_file']['tmp_name'], $filename);
 
@@ -47,21 +51,19 @@ function getCurrentUserId($link, $token){
 
 function submit() {
     global $link;
-
     if(!isset($_POST)) {
         die("Nothing in POST query");
     }
 
     $user_id = getCurrentUserId($link, $_COOKIE["token"]);
 
-    echo "userId = $user_id";
     $problem_id = $_POST["problem_id"];
     $language = $_POST["language"];
 
     $sql = "INSERT INTO submissions (problem_id, user_id, time, language) VALUES ($problem_id, $user_id, now(), '$language');";
     $inserted = mysqli_query($link, $sql);
     if(!$inserted) {
-        mysqli_error($link);
+        echo "sql = $sql";
     	die("Error while inserting into submissions");
     }
 

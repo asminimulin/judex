@@ -14,4 +14,4 @@ else
     out="$work_dir/$2"
 fi
 
-g++ -o $out $in
+g++ -O3 -o $out $in

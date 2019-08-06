@@ -58,10 +58,10 @@ return $ans;
 
 function connect_to_db() {
     global $CONF;
-    $new_connection = mysqli_connect($CONF["mysql"]["host"],
-                                $CONF["mysql"]["user"],
-                                $CONF["mysql"]["password"],
-                                $CONF["mysql"]["dbname"]);
+    $new_connection = mysqli_connect($CONF["database"]["host"],
+                                $CONF["database"]["user"],
+                                $CONF["database"]["password"],
+                                $CONF["database"]["dbname"]);
     mysqli_set_charset($new_connection, "utf8");
     return $new_connection;
 }
