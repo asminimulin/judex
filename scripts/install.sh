@@ -165,7 +165,6 @@ create-system-dir "$JUDEX_SUBMISSIONS"
 
 JUDEX_PROBLEMS="$JUDEX_DATA/Problems"
 create-system-dir "$JUDEX_PROBLEMS"
-tar -xf "res/problems.tar" -C "$JUDEX_PROBLEMS"
 
 JUDEX_ARCHIVE="$JUDEX_DATA/Archive"
 create-system-dir "$JUDEX_ARCHIVE"
@@ -176,6 +175,8 @@ create-system-dir "$JUDEX_LOG"
 echo "$VERSION" >"$INSTALLATION_DIR/version"
 
 chown -R "$USER":"judex-data" "$JUDEX_DATA"
+chmod -R 770 "$JUDEX_DATA"
+tar -xf "res/problems.tar" -C "$JUDEX_PROBLEMS"
 
 # Creating configs
 rm -rf "/etc/judex"
@@ -189,8 +190,8 @@ xargs --arg-file="$DEPENDENCIES/distro" apt -qq install -y
 pip3 -q install -r "$DEPENDENCIES/python3"
 
 echo "Initializing database"
-service mysql start
-scripts/mysql/init.sh "scripts/mysql/init.sql" "res/mysql-dump.sql" "judex"
+systemctl start mysql
+scripts/mysql/init.sh "scripts/mysql/init.sql" "res/init.sql" "judex"
 echo "Database successfully initialized"
 
 # Copying code
