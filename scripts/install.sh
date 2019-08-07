@@ -1,6 +1,18 @@
 #!/bin/bash
 
-#*****************Functions************************
+VERSION=1.0
+
+if [ "$EUID" != "0" ]; then
+    echo "Installation requires root privileges."
+    exit 1
+fi
+
+if [ "$0" != "./install.sh" ]; then
+  cd "$(dirname $0)/.."
+else
+  cd ..
+fi
+# Now we are at $JUDEX_HOME
 
 function install-site() {
     # Args:
@@ -11,19 +23,10 @@ function install-site() {
     local servername=$1
     local path="/etc/apache2/sites-available/$servername.conf"
     local site_path=$2
-    echo \
-"<VirtualHost *:80>
-    ServerName $servername
-    DocumentRoot $site_path
-    <Directory $site_path>
-        Options Indexes FollowSymLinks
-        AllowOverride None
-        Require all granted
-    </Directory>
-    ErrorLog \${APACHE_LOG_DIR}/error.log
-	CustomLog \${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>" >"$path"
-    cp -r "./judex.tech" "$site_path"
+    cp "res/apache2-site-configuration.conf" "$path"
+    sed -i "s#VAR_SERVERNAME#$servername#g" "$path"
+    sed -i "s#VAR_SITE_ROOT#$site_path#g" "$path"
+    cp -r "./src/judex.tech" "$site_path"
     echo "Created site $servername on $site_path"
 }
 
@@ -67,50 +70,49 @@ function create-system-dir() {
     fi
 }
 
-#********************************************************
+function getConfirm() {
+  echo "Do you want to continue?[y/n]"
+  local ack
+  read ack
+  case "$ack" in
+    n)
+      return 1
+    ;;
+    no)
+      return 1
+    ;;
+    N)
+      return 1
+    ;;
+    No)
+      return 1
+    ;;
+    NO)
+      return 1
+  esac
+  return 0
+}
 
-if [[ $EUID -ne 0 ]]; then
-    echo "Installation needs root privileges."
-    exit 1
-fi
+
+DEPENDENCIES="./dependencies"
 
 INSTALLATION_DIR="/opt/judex"
 
-if [ -d "$INSTALLATION_DIR" ]; then
-    echo "System Judex has already installed."
-    exit 1
+if [ -f "$INSTALLATION_DIR/version" ]; then
+    version="$(cat "$INSTALLATION_DIR/version")"
+    echo "System Judex v$version has already installed."
+    if ! getConfirm; then
+      echo "Installation aborted"
+      exit 1
+    fi
+    unset version
 fi
 
-if [[ "$0" != "scripts/install.sh" ]]; then
-    error "Installation must be ran as ./scripts/install.sh"
-    exit 1
-fi
-
+rm -rf "$INSTALLATION_DIR"
 create-system-dir "$INSTALLATION_DIR"
 
 USER="judex-master"
-DEVMODE=1
-
-<< --SKIP--
-while [[ $# -gt 0 ]]; do
-    arg="$1"
-    case $arg in
-        "--user")
-            shift
-            USER="$1"
-            shift
-        ;;
-        "--dev")
-            DEVMODE=1
-            shift
-        ;;
-        *)
-            echo "Unknow option $arg"
-            exit 1
-        ;;
-    esac
-done
---SKIP--
+DEVMODE=0
 
 # Creating linux user if necessary
 if ! id -u $USER &>/dev/null; then
@@ -140,62 +142,61 @@ else
     echo "User $USER exists"
 fi
 
+# Creating group for data
+groupadd judex-data
+
 # Initializing necessary filesystem
 JUDEX_HOME="/home/$USER/.judex"
 create-system-dir "$JUDEX_HOME"
-echo "\$JUDEX_HOME set to $JUDEX_HOME"
 
 JUDEX_CONFIG="/etc/judex"
 create-system-dir "$JUDEX_CONFIG"
-echo "\$JUDEX_CONFIG set to $JUDEX_CONFIG"
-
-JUDEX_DATA="$JUDEX_HOME/data"
-create-system-dir "$JUDEX_DATA"
-echo "\$JUDEX_DATA set to $JUDEX_DATA"
 
 JUDEX_SRC="$INSTALLATION_DIR/src"
 create-system-dir "$JUDEX_SRC"
-echo "\$JUDEX_SRC set to $JUDEX_SRC"
 
-JUDEX_RUN="/var/run/judex"
-echo "\$JUDEX_RUN set to $JUDEX_RUN"
+JUDEX_DATA="/var/lib/judex"
+create-system-dir "$JUDEX_DATA"
+
+JUDEX_RUN="/run/judex"
 
 JUDEX_SUBMISSIONS="$JUDEX_DATA/Submissions"
 create-system-dir "$JUDEX_SUBMISSIONS"
-echo "\$JUDEX_SUBMISSIONS set to $JUDEX_SUBMISSIONS"
 
 JUDEX_PROBLEMS="$JUDEX_DATA/Problems"
 create-system-dir "$JUDEX_PROBLEMS"
-echo "\$JUDEX_PROBLEMS set to $JUDEX_PROBLEMS"
+tar -xf "res/problems.tar" -C "$JUDEX_PROBLEMS"
 
 JUDEX_ARCHIVE="$JUDEX_DATA/Archive"
 create-system-dir "$JUDEX_ARCHIVE"
-echo "\$JUDEX_ARCHIVE set to $JUDEX_ARCHIVE"
 
-chown $USER:$USER -R "$JUDEX_HOME"
+JUDEX_LOG="/var/log/judex"
+create-system-dir "$JUDEX_LOG"
 
-# Create config file
-echo "Creating judex.conf..."
-config="
-# Auto-generated config file.
-# Created: $(date '+%Y/%m/%d %H:%M:%S').
+echo "$VERSION" >"$INSTALLATION_DIR/version"
 
-[judex]
-JUDEX_HOME=$JUDEX_HOME
-JUDEX_DATA=$JUDEX_DATA
-JUDEX_SRC=$JUDEX_SRC
-JUDEX_RUN=$JUDEX_RUN
-JUDEX_SUBMISSIONS=$JUDEX_SUBMISSIONS
-JUDEX_PROBLEMS=$JUDEX_PROBLEMS
-JUDEX_ARCHIVE=$JUDEX_ARCHIVE
-JUDEX_CONFIG=$JUDEX_CONFIG
-"
-filename="$JUDEX_CONFIG/judex.conf"
-echo "$config" >"$filename"
-echo "Created config file in $filename"
-unset filename config
+chown -R "$USER":"judex-data" "$JUDEX_DATA"
+
+# Creating configs
+rm -rf "/etc/judex"
+cp -r "res/conf/" "/etc/judex"
+sed -i "s#VAR_CREATING_TIMESTAMP#$(date '+%y/%m/%d %h:%m:%s')#g" "/etc/judex/judex.conf"
+
+# Installing Dependencies
+echo "Installing dependencies"
+apt -qq update
+xargs --arg-file="$DEPENDENCIES/distro" apt -qq install -y
+pip3 -q install -r "$DEPENDENCIES/python3"
+
+echo "Initializing database"
+service mysql start
+scripts/mysql/init.sh "scripts/mysql/init.sql" "res/mysql-dump.sql" "judex"
+echo "Database successfully initialized"
 
 # Copying code
+## Control script
+cp "scripts/judex" "/usr/bin"
+
 ## Site installation
 if [[ "$DEVMODE" == "1" ]]; then
     install-site "$USER-dev.judex.tech" "$JUDEX_SRC/judex.tech"
@@ -204,4 +205,4 @@ else
 fi
 
 ## Testing installation
-cp -r "./Testing" "$JUDEX_SRC/Testing"
+cp -r "./src/Testing" "$JUDEX_SRC/Testing"

@@ -1,0 +1,29 @@
+[
+    "c++": {
+        "name": "C++",
+        "extensions": [
+            ".cpp",
+            ".h",
+            ".hpp"
+        ],
+        "type": "compiled",
+        "compile_command": ""
+    },
+    "python3": {
+        "name": "Python3",
+        "extensions": [
+            ".py"
+        ],
+        "type": "interpret",
+        "interpreter": ""
+    },
+    "c": {
+        "name": "C",
+        "extensions": [
+            ".c",
+            ".h"
+        ],
+        "type": "compiled",
+        "compile_command": ""
+    }
+]

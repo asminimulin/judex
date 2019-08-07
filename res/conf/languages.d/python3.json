@@ -1,0 +1,8 @@
+{
+    "name": "Python3",
+    "extensions": [
+        ".py"
+    ],
+    "type": "interpret",
+    "interpreter": ""
+}

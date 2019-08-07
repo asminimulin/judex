@@ -1,6 +1,4 @@
-.vscode/
-conf.d/judex.conf
-Testing/__pycache__/
 .passwords
 scripts/docker-run.sh
 TODO
+.idea/
