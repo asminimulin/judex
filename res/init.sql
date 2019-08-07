@@ -242,7 +242,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','admin','admin@judex.tech','Admin','Admin',0,_binary '\0\0\0\0');
+INSERT INTO `users` VALUES (1,'admin',MD5('admin'),'admin@judex.tech','Admin','Admin',0,_binary '\0\0\0\0');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
