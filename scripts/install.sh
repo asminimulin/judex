@@ -165,7 +165,7 @@ create-system-dir "$JUDEX_SUBMISSIONS"
 
 JUDEX_PROBLEMS="$JUDEX_DATA/Problems"
 create-system-dir "$JUDEX_PROBLEMS"
-tar -xf "res/problems.tar" -C "$JUDEX_DATA"
+tar -xf "res/problems.tar" -C "$JUDEX_PROBLEMS"
 
 JUDEX_ARCHIVE="$JUDEX_DATA/Archive"
 create-system-dir "$JUDEX_ARCHIVE"
