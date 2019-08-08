@@ -53,12 +53,18 @@ def script_valid(script):
 	print (os.path.exists(script) + os.path.isfile(script))
 	return os.path.exists(script) and os.path.isfile(script)
 
-def configure_language(name, language_type, script=None):
+def get_language_extension():
+	extension = input('Enter extension using for this language(e.g. C++ requires ".cpp"): ')
+	if not extension:
+		error("Empty extension")
+
+def configure_language(name, language_type, language_extension, script=None):
 	os.mkdir(os.path.join('/opt/judex/languages', name))
 	config = dict()
 	config[name] = dict()
 	config[name]['name'] = name
 	config[name]['type'] = language_type
+	config[name]['extension'] = language_extension
 	if language_type == 'compiled':
 		dest_script =  f'/opt/judex/languages/{name}/compile'
 		shutil.copyfile(script, dest_script)
@@ -77,14 +83,15 @@ def add_language(args):
 	name = get_language_name(args)
 	language_type = get_language_type(args)
 	script = get_compile_script(args)
+	language_extension = get_language_extension()
 	if (language_exists(name)):
 		error('Language exists')
 	if not script_valid(script):
 		error('Invalid script')
 	if language_type == 'compiled':
-		configure_language(name, language_type, script)
+		configure_language(name, language_type, language_extension, script)
 	else:
-		configure_language(name, language_type)
+		configure_language(name, language_type, language_extension)
 
 if __name__ == "__main__":
 	add_language(sys.argv[1:])
