@@ -207,3 +207,7 @@ fi
 
 ## Testing installation
 cp -r "./src/Testing" "$JUDEX_SRC/Testing"
+
+# Installing default languages
+apt -qqy install g++ python3 fpc
+cp -r "languages" "/opt/judex/languages"

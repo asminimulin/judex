@@ -1,0 +1,7 @@
+{
+    "Free Pascal": {
+        "name": "Free Pascal",
+        "type": "compiled",
+        "compile": "/opt/judex/languages/'Free pascal'/compile"
+    }
+}
