@@ -1,6 +1,7 @@
 {
 	"Python3": {
 		"name": "Python3",
-		"type": "interpreted"
+		"type": "interpreted",
+		"extension": ".py"
 	}
 }
