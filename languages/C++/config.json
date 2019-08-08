@@ -1,7 +1,7 @@
 {
-    "c++": {
-        "name": "c++",
+    "C++": {
+        "name": "C++",
         "type": "compiled",
-        "compile": "/opt/judex/languages/c++/compile"
+        "compile": "/opt/judex/languages/C++/compile"
     }
 }
