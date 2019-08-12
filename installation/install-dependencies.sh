@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 # Installing Dependencies
 echo "Installing dependencies"
 apt -qq update

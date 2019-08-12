@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 if [ "$EUID" != "0" ]; then
 	echo "Root privileges required"
