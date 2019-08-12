@@ -1,12 +1,12 @@
 #!/bin/bash
 
 if [ "$EUID" != "0" ]; then
-	echo "Root privileges required"
-	exit 1
+    echo "Root privileges required"
+    exit 1
 fi
 
 if [ -d "/etc/judex" ]; then
-	rm -rf "/etc/judex"
+    rm -rf "/etc/judex"
 fi
 mkdir "/etc/judex"
 

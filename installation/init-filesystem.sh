@@ -1,17 +1,17 @@
 #!/bin/bash
 
 if [ "$EUID" != "0" ]; then
-	echo "Root privileges required"
-	exit 1
+    echo "Root privileges required"
+    exit 1
 fi
 
 USER="judex"
 GROUP="judex-data"
 
 function md() {
-	if [ ! -d "$1" ]; then
-		mkdir -p "$1"
-	fi
+    if [ ! -d "$1" ]; then
+        mkdir -p "$1"
+    fi
 }
 
 installation_dir="/opt/judex"
