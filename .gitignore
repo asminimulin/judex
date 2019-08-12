@@ -2,3 +2,4 @@
 scripts/docker-run.sh
 TODO
 .idea/
+uninstall.sh

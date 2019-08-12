@@ -1,0 +1,8 @@
+{
+    "C++": {
+        "name": "C++",
+        "type": "compiled",
+        "compile": "/opt/judex/languages/C++/compile",
+		"extension": ".cpp"
+    }
+}

@@ -1,9 +1,0 @@
-{
-    "name": "C",
-    "extensions": [
-        ".c",
-        ".h"
-    ],
-    "type": "compiled",
-    "compile_command": ""
-}

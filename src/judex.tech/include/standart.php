@@ -4,7 +4,9 @@ include_once "include/functions.php";
 include_once "scripts/loadPermissions.php";
 $authBool = false;
 
-$link = connect_to_db();
+if (!$link) {
+	$link = connect_to_db();
+}
 if (!$link) {
     echo "<p>".mysqli_connect_error()."</p>";
     echo "<p>Stadart.php caught DB Error</p>";

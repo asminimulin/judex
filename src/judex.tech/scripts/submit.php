@@ -32,7 +32,7 @@ function upload($submission_id, $language) {
     chmod($path_to_dir, 0777);
     chmod($path_to_file, 0777);
 	
-    $lang_conf = parse_ini_file("/etc/judex/language.ini", true);
+    $lang_conf = parse_ini_file("/opt/judex/languages/$language/config.ini", true);
     $filename = "$submission_dir/$submission_id".$lang_conf[$language]["extension"];
     $uploaded = move_uploaded_file($_FILES['uploading_file']['tmp_name'], $filename);
 

@@ -62,7 +62,6 @@ CREATE TABLE `auth` (
 
 LOCK TABLES `auth` WRITE;
 /*!40000 ALTER TABLE `auth` DISABLE KEYS */;
-INSERT INTO `auth` VALUES (1,'4kcePtE6xdEqMa8zD8TYRpJIxy4Kh4QI','2019-08-05 17:15:28'),(2,'wLYpBZT9CM4o1lK1hmEGPA2Mn2hUXYGN','2019-06-05 22:47:14');
 /*!40000 ALTER TABLE `auth` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -96,12 +95,12 @@ DROP TABLE IF EXISTS `problems`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `problems` (
-  `id` int(11) NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `problems_id_uindex` (`id`),
   UNIQUE KEY `problems_name_uindex` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -110,7 +109,7 @@ CREATE TABLE `problems` (
 
 LOCK TABLES `problems` WRITE;
 /*!40000 ALTER TABLE `problems` DISABLE KEYS */;
-INSERT INTO `problems` VALUES (1,'A+B');
+INSERT INTO `problems` VALUES (1,'A+B'),(2,'Reverse');
 /*!40000 ALTER TABLE `problems` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -234,7 +233,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -243,7 +242,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','e10adc3949ba59abbe56e057f20f883e','alex.minimulin@gmail.com','Admin','Admin',0,_binary '\0\0\0'),(2,'exsandebest','dfa1b63cbb7d09eb5902a05ceb5fb2f9','dan56213@mail.ru','Daniil','Bogdanov',0,_binary '\0\0\0'),(3,'kolemax','e10adc3949ba59abbe56e057f20f883e','klimkomx@gmail.com','Maxim','Klimenko',0,_binary '\0\0\0\0'),(4,'RainbowCat','e10adc3949ba59abbe56e057f20f883e','daniil.golov.02@mail.ru','Daniil','Golov',0,_binary '\0\0\0\0'),(5,'russian','349cac1e25139fabb189e59f5f34a4ee','russian@russia.ru','Русский','Язык',0,_binary '\0\0\0\0');
+INSERT INTO `users` VALUES (1,'admin',MD5('admin'),'admin@judex.tech','Admin','Admin',0,_binary '\0\0\0\0');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -256,4 +255,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-05 17:19:08
+-- Dump completed on 2019-08-06 11:21:36

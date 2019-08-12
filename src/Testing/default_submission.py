@@ -15,7 +15,7 @@ class DefaultSubmission:
     def __init__(self, submission):
         self.language = submission['language']
         language_config = configparser.ConfigParser()
-        language_config.read('/etc/judex/language.ini')
+        language_config.read(f'/opt/judex/languages/{self.language}/config.ini')
         self.compile_command = language_config[self.language]['compile']
         config = configparser.ConfigParser()
         config.read('/etc/judex/judex.conf')
