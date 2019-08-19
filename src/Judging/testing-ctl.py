@@ -40,7 +40,7 @@ def start():
         print('Judexd is already running')
         return 1
 
-    proc = subprocess.Popen('/opt/judex/src/Testing/judexd.py')
+    proc = subprocess.Popen('/opt/judex/src/Judging/judexd.py')
     time.sleep(1.5)
     if is_running():
         print('judexd has started up')

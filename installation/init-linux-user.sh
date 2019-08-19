@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$EUID" != "0"]; then
+if [ "$EUID" != "0" ]; then
     echo "Root privileges requiered"
     exit 1
 fi

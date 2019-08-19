@@ -22,3 +22,6 @@ cp -r $sitesrc/* "$siteroot"
 
 echo "Created site $servername in $siteroot sourced from $sitesrc"
 
+chown -R judex:judex-data $siteroot
+chmod -R 770 $siteroot
+

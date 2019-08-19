@@ -15,7 +15,7 @@ fi
 /bin/sh -c installation/init-database.sh
 /bin/sh -c installation/install-site.sh
 /bin/sh -c installation/init-languages.sh
-/bin/sh -c installation/init-testing-source.sh
+/bin/sh -c installation/init-judging-source.sh
 
 tar -xf "installation/res/problems.tar" -C "/var/lib/judex/Problems"
 

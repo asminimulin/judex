@@ -28,15 +28,15 @@ function _start {
       systemctl start mysql
     fi
     phpenmod mysqli
-    ( $src/Testing/testing-ctl.py start )
+    ( $src/Judging/testing-ctl.py start )
 }
 
 function _stop {
-    ( $src/Testing/testing-ctl.py stop )
+    ( $src/Judging/testing-ctl.py stop )
 }
 
 function _restart {
-    ( $src/Testing/testing-ctl.py restart )
+    ( $src/Judging/testing-ctl.py restart )
 }
 
 args=()

@@ -7,8 +7,8 @@ fi
 
 USER="judex"
 
-from="src/Testing/*"
-to="/opt/judex/src/Testing"
+from="src/Judging/*"
+to="/opt/judex/src/Judging"
 
 mkdir -p $to 2>/dev/null # stderr to /dev/null for ignoring "directory exists" error
 
