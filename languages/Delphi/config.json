@@ -1,8 +1,0 @@
-{
-    "Delphi": {
-        "name": "Delphi",
-        "type": "compiled",
-        "compile": "/opt/judex/languages/Delphi/compile",
-		"extension": ".pas"
-    }
-}

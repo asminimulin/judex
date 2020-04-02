@@ -1,5 +1,0 @@
-This is the description of how user rating system is working
-
-Every problem has got its own cost at every moment. Starting cost for every problem is 1000 rating points. 
-When user solves the problem on X (of 100) points, problem rating changes: if it was P rating points, it 
-changes to NEW_P = P - int(X / 10) rating points. And user rating is increased by int((X / 100) * NEW_P). 

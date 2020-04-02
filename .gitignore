@@ -1,5 +1,13 @@
-.passwords
-scripts/docker-run.sh
-TODO
+instance/
+local/
+
+venv/
+__pycache__/
+
+depricated/
+
 .idea/
-uninstall.sh
+
+
+*.pyc
+
