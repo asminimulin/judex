@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.mark.parametrize('src_code', [None, "# Some code"])
-def test_submit(test_client, init_database, src_code):
+def test_submit(test_client, init_database, init_archive, src_code):
     submission_data = {'problem_id': 1}
     if src_code is not None:
         submission_data['src_code'] = src_code
@@ -16,4 +16,15 @@ def test_submit(test_client, init_database, src_code):
         assert 'submission' in response.json
         assert 'id' in response.json['submission']
         assert isinstance(response.json['submission']['id'], int)
+
+
+def test_correct_submission(test_client, init_database, init_archive):
+    src_code = 'a, b = map(int, input().split())\n' +\
+               'print(a + b)\n'
+    submission_data = {'problem_id': 1, 'src_code': src_code}
+    response = test_client.post('/submissions/submit', json=submission_data)
+    assert response.status_code == 202
+    assert 'submission' in response.json
+    assert 'id' in response.json['submission']
+    assert isinstance(response.json['submission']['id'], int)
 

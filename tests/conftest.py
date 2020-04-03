@@ -1,4 +1,6 @@
 import pytest
+import shutil
+import os
 
 from judex import create_app
 from judex import db
@@ -46,3 +48,10 @@ def init_database():
 
     db.drop_all()
     db.session.commit()
+
+
+@pytest.fixture(scope='module')
+def init_archive(test_client):
+    app = test_client.application
+    submissions = os.path.join(app.instance_path, 'Submissions')
+    shutil.rmtree(submissions)
