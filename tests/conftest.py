@@ -54,4 +54,12 @@ def init_database():
 def init_archive(test_client):
     app = test_client.application
     submissions = os.path.join(app.instance_path, 'Submissions')
-    shutil.rmtree(submissions)
+    try:
+        shutil.rmtree(submissions)
+    finally:
+        pass
+
+
+@pytest.fixture(scope='module')
+def system_ready(test_client, init_archive, init_database):
+    return test_client
