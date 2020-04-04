@@ -36,9 +36,7 @@ def create_app(test_config=None):
         return f'Instance: {app.instance_path}'
 
     if 'DEVELOPMENT' in app.config and app.config['DEVELOPMENT']:
-        logging.basicConfig(level=logging.DEBUG)
-
-    logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.NOTSET)
 
     return app
 
