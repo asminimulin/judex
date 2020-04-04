@@ -56,5 +56,8 @@ class TestingResults:
     def get_current_score(self):
         return self._score
 
+    def as_json(self):
+        return self._results
+
     def __repr__(self):
         return f'<TestingResults (Submission#{self._submission_id})>'

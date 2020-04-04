@@ -1,4 +1,5 @@
 import logging
+import json
 
 from flask import request, jsonify
 
@@ -43,6 +44,6 @@ def submit():
         return 'Some troubles with internal component', 500
 
     testing_submission = TestingSubmission(submission_context, problem_id=submission.problem_id)
-    submission_tester.test_submission(testing_submission)
+    testing_results = submission_tester.test_submission(testing_submission)
 
-    return jsonify({'submission': {'id': submission.id}}), 202
+    return jsonify({'submission': dict(id=submission.id, testing_results=testing_results.as_json())}), 202

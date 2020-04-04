@@ -27,4 +27,7 @@ def test_correct_submission(test_client, init_database, init_archive):
     assert 'submission' in response.json
     assert 'id' in response.json['submission']
     assert isinstance(response.json['submission']['id'], int)
+    assert 'testing_results' in response.json['submission']
+    assert 'score' in response.json['submission']['testing_results']
+    assert response.json['submission']['testing_results']['score'] == 100
 
