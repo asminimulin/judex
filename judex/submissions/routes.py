@@ -20,6 +20,7 @@ def submit():
     try:
         submission = Submission(problem_id=request.json['problem_id'])
         src_code = request.json['src_code']
+        submission_language = request.json['language']
         if src_code is None:
             raise ValueError
     except (KeyError, ValueError):
@@ -36,14 +37,20 @@ def submit():
         raise e
 
     try:
-        submission_context = SubmissionContext(submission.id, init_fs=True, src_code=src_code)
-    except OSError:
+        submission_context = SubmissionContext(submission.id, submissions_language=submission_language,
+                                               init_fs=True, src_code=src_code)
+        testing_submission = TestingSubmission(submission_context, problem_id=submission.problem_id)
+    except OSError as e:
+        logging.error(f'Problems with internal module "testing", {e}')
         db.session.delete(submission)
         db.session.commit()
-        logging.error('Problems with internal module testing, failed to create submission context')
-        return 'Some troubles with internal component', 500
+        return jsonify({'error': 'Internal error'}), 500
+    except ValueError as e:
+        logging.error(f'Submission with id={submission.id} used unsupported language={submission_language}')
+        db.session.delete(submission)
+        db.session.commit()
+        return jsonify({'error': str(e)}), 400
 
-    testing_submission = TestingSubmission(submission_context, problem_id=submission.problem_id)
     testing_results = submission_tester.test_submission(testing_submission)
 
     return jsonify({'submission': dict(id=submission.id, testing_results=testing_results.as_json())}), 202

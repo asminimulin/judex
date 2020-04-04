@@ -13,6 +13,9 @@ class TestingResults:
         PartialSolution = 'PS'
         CompleteSolution = 'CS'
 
+        def __str__(self):
+            return str(self.value)
+
     class TestResults:
 
         class Verdict(enum.Enum):
@@ -21,6 +24,9 @@ class TestingResults:
             WrongAnswer = 'WA'
             RuntimeError = 'RE'
             TimeLimitExceeded = 'TLE'
+
+            def __str__(self):
+                return str(self.value)
 
         def __init__(self, test_num):
             self.test_num = test_num

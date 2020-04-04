@@ -26,10 +26,6 @@ class Tester:
     # The directory where submission's output will be stored
     output_directory: str
 
-    # The executable program which we get after necessary actions with submission
-    # FIXME: implement this behaviour using some language helper class
-    executable = '/usr/bin/python3'
-
     # Currently testing submission
     submission: Submission
 
@@ -44,10 +40,20 @@ class Tester:
 
             self.submission = submission
             context = submission.get_submission_context()
-            self.problem = Problem(ProblemContext(submission.problem_id))
+            self.problem = submission.problem
             self.output_directory = context.get_output_directory()
 
             testing_results = TestingResults(context)
+
+            if context.language_helper.is_compiled:
+                success = context.language_helper.compile(context)
+                if not success:
+                    testing_results.set_testing_result(testing_results.Verdict.CompilationError)
+                    for i in range(1, self.problem.tests_count + 1):
+                        testing_results.add_test_results(TestingResults.TestResults(i))
+                    testing_results.apply()
+                    return testing_results
+
             testing_results.set_testing_result(testing_results.Verdict.Running)
             testing_results.apply()
 
@@ -73,9 +79,12 @@ class Tester:
         input_file = self.problem.get_test(test_number)
         output_file = os.path.join(self.output_directory, f'{test_number}.txt')
         try:
-            # FIXME: we can use source files as argument only for interpreted languages like Python
-            process = subprocess.run([Tester.executable, self.submission.get_submission_context().get_source()],
-                                     # executable=Tester.executable,
+            if self.submission.get_submission_context().language_helper.is_compiled:
+                args = [self.submission.get_submission_context().get_executable_file()]
+            else:
+                args = [self.submission.get_submission_context().language_helper.interpreter_path,
+                        self.submission.get_submission_context().get_source()]
+            process = subprocess.run(args,
                                      stdin=open(input_file, 'r'),
                                      stdout=open(output_file, 'w'),
                                      stderr=open(Tester.OUTPUT_EATER, 'w'),

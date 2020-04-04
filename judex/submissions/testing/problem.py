@@ -37,7 +37,11 @@ class Problem:
     def __init__(self, problem_context: ProblemContext):
         self.id = problem_context.problem_id
         self._problem_context = problem_context
-        self.config = json.load(open(problem_context.get_config_path(), 'r'))
+        try:
+            self.config = json.load(open(problem_context.get_config_path(), 'r'))
+        except FileNotFoundError:
+            raise ValueError('Invalid problem id')
+
         self.tests_count = self.config['tests_count']
 
     def get_test(self, test_num: int) -> str:
