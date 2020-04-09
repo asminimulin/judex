@@ -74,7 +74,7 @@ class Tester:
             return testing_results
 
     def run_test(self, test_number) -> TestingResults.TestResults:
-        logging.info(f'Run test {test_number=}')
+        logging.info(f'Run test test_number={test_number}')
         test_results = TestingResults.TestResults(test_number)
         input_file = self.problem.get_test(test_number)
         output_file = os.path.join(self.output_directory, f'{test_number}.txt')
