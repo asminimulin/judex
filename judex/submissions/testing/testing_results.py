@@ -35,12 +35,16 @@ class TestingResults:
         def as_json(self):
             return {'test_num': self.test_num, 'verdict': str(self.verdict)}
 
-    def __init__(self, submission_context: SubmissionContext):
+    def __init__(self, submission_context: SubmissionContext, is_initial=True):
         self._results = {'details': [], 'score': 0, 'verdict': str(self.Verdict.NotTested)}
         self._output_file = submission_context.get_result_file()
         self._verdict = self.Verdict.NotTested
         self._score = 0
         self._submission_id = submission_context.submission_id
+        if is_initial:
+            self.apply()
+        else:
+            self._results = json.load(open(self._output_file, 'r'))
 
     def add_test_results(self, test_results: TestResults):
         self._results['details'].append(test_results.as_json())

@@ -5,11 +5,10 @@ import os
 from judex import create_app
 from judex import db
 
-from judex.models.problem import Problem
-
 
 @pytest.fixture(scope='module')
 def new_problem():
+    from judex.models.problem import Problem
     problem = Problem(name='Test problem')
     return problem
 
@@ -34,7 +33,7 @@ def test_client():
 
 
 @pytest.fixture(scope='module')
-def init_database():
+def init_database(test_client):
     # Give fixture info about used models to create tables in db
     # noinspection PyUnresolvedReferences
     import judex.models.submission
@@ -54,12 +53,17 @@ def init_database():
 def init_archive(test_client):
     app = test_client.application
     submissions = os.path.join(app.instance_path, 'Submissions')
+
+    os.makedirs(submissions)
+
+    yield True
+
     try:
         shutil.rmtree(submissions)
-    finally:
+    except OSError:
         pass
 
 
 @pytest.fixture(scope='module')
-def system_ready(test_client, init_archive, init_database):
-    return test_client
+def prepared_test_client(test_client, init_archive, init_database):
+    yield test_client
