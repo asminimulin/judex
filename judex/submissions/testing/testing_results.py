@@ -31,9 +31,12 @@ class TestingResults:
         def __init__(self, test_num):
             self.test_num = test_num
             self.verdict = self.Verdict.NotExecuted
+            self.memory_usage = 0.0
 
         def as_json(self):
-            return {'test_num': self.test_num, 'verdict': str(self.verdict)}
+            return dict(test_num=self.test_num,
+                        verdict=str(self.verdict),
+                        memory_usage=self.memory_usage)
 
     def __init__(self, submission_context: SubmissionContext, is_initial=True):
         self._results = {'details': [], 'score': 0, 'verdict': str(self.Verdict.NotTested)}
