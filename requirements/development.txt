@@ -1,0 +1,7 @@
+flask
+flask-sqlalchemy
+sqlalchemy
+flask-migrate
+flask-script
+pytest
+coverage
