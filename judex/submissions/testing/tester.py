@@ -2,6 +2,8 @@ import os
 import subprocess
 import logging
 from threading import Lock
+import time
+import psutil
 
 from .testing_results import TestingResults
 from .submission import Submission
@@ -79,12 +81,25 @@ class Tester:
             else:
                 args = [self.submission.get_submission_context().language_helper.interpreter_path,
                         self.submission.get_submission_context().get_source()]
-            process = subprocess.run(args,
-                                     stdin=open(input_file, 'r'),
-                                     stdout=open(output_file, 'w'),
-                                     stderr=open(Tester.OUTPUT_EATER, 'w'),
-                                     timeout=self.problem.time_limit)
-        except subprocess.TimeoutExpired:
+            process = subprocess.Popen(args,
+                                       stdin=open(input_file, 'r'),
+                                       stdout=open(output_file, 'w'),
+                                       stderr=open(Tester.OUTPUT_EATER, 'w')
+                                       )
+            started_at = time.time()
+            os_process = psutil.Process(process.pid)
+            memory_usage = 0.0
+            while time.time() - started_at < self.problem.time_limit and process.poll() is None:
+                current_memory_usage = os_process.memory_info().rss
+                current_memory_usage = current_memory_usage / 1024 / 1024  # convert to MB
+                memory_usage = max(memory_usage, current_memory_usage)
+                test_results.memory_usage = memory_usage
+
+            if time.time() - started_at > self.problem.time_limit:
+                process.kill()
+                raise TimeoutError
+
+        except TimeoutError:
             test_results.verdict = test_results.Verdict.TimeLimitExceeded
             return test_results
 
