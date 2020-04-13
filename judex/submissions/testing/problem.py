@@ -35,6 +35,7 @@ class ProblemContext:
 
 class Problem:
     DEFAULT_TIME_LIMIT = 1.0
+    DEFAULT_MEMORY_LIMIT = 64
 
     def __init__(self, problem_context: ProblemContext):
         self.id = problem_context.problem_id
@@ -45,15 +46,27 @@ class Problem:
             raise ValueError('Invalid problem id')
 
         self.tests_count = self.config['tests_count']
+
         try:
             self.time_limit = self.config['time_limit']
-            assert isinstance(self.time_limit, float)
+            assert isinstance(self.time_limit, (float, int))
         except KeyError:
             self.time_limit = Problem.DEFAULT_TIME_LIMIT
             logging.warning(f'{self} config has not specified time_limit, '
                             f'used DEFAULT_TIME_LIMIT={Problem.DEFAULT_TIME_LIMIT}')
         except AssertionError:
             logging.error(f'{self} has bad time_limit configuration')
+            raise ValueError
+
+        try:
+            self.memory_limit = self.config['memory_limit']
+            assert isinstance(self.memory_limit, (float, int))
+        except KeyError:
+            self.memory_limit = Problem.DEFAULT_TIME_LIMIT
+            logging.warning(f'{self} config has not specified memory_limit, '
+                            f'used DEFAULT_MEMORY_LIMIT={Problem.DEFAULT_MEMORY_LIMIT}')
+        except AssertionError:
+            logging.error(f'{self} has bad memory_limit configuration')
             raise ValueError
 
     def get_test(self, test_num: int) -> str:

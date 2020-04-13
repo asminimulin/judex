@@ -24,6 +24,7 @@ class TestingResults:
             WrongAnswer = 'WA'
             RuntimeError = 'RE'
             TimeLimitExceeded = 'TLE'
+            MemoryLimitExceeded = 'MLE'
 
             def __str__(self):
                 return str(self.value)

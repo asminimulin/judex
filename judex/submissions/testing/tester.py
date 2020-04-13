@@ -94,6 +94,8 @@ class Tester:
                 current_memory_usage = current_memory_usage / 1024 / 1024  # convert to MB
                 memory_usage = max(memory_usage, current_memory_usage)
                 test_results.memory_usage = memory_usage
+                if memory_usage > self.problem.memory_limit:
+                    raise MemoryError
 
             if process.poll() is None:
                 process.kill()
@@ -106,6 +108,9 @@ class Tester:
 
         except TimeoutError:
             test_results.verdict = test_results.Verdict.TimeLimitExceeded
+            return test_results
+        except MemoryError:
+            test_results.verdict = test_results.Verdict.MemoryLimitExceeded
             return test_results
 
         if process.returncode != 0:
