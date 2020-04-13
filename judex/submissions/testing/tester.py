@@ -95,8 +95,13 @@ class Tester:
                 memory_usage = max(memory_usage, current_memory_usage)
                 test_results.memory_usage = memory_usage
 
-            if time.time() - started_at > self.problem.time_limit:
+            if process.poll() is None:
                 process.kill()
+
+            running_time = time.time() - started_at
+            test_results.running_time = running_time
+
+            if running_time > self.problem.time_limit:
                 raise TimeoutError
 
         except TimeoutError:
