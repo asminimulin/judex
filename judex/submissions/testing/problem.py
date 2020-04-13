@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 
 from flask import current_app as app
 
@@ -33,6 +34,7 @@ class ProblemContext:
 
 
 class Problem:
+    DEFAULT_TIME_LIMIT = 1.0
 
     def __init__(self, problem_context: ProblemContext):
         self.id = problem_context.problem_id
@@ -43,6 +45,16 @@ class Problem:
             raise ValueError('Invalid problem id')
 
         self.tests_count = self.config['tests_count']
+        try:
+            self.time_limit = self.config['time_limit']
+            assert isinstance(self.time_limit, float)
+        except KeyError:
+            self.time_limit = Problem.DEFAULT_TIME_LIMIT
+            logging.warning(f'{self} config has not specified time_limit, '
+                            f'used DEFAULT_TIME_LIMIT={Problem.DEFAULT_TIME_LIMIT}')
+        except AssertionError:
+            logging.error(f'{self} has bad time_limit configuration')
+            raise ValueError
 
     def get_test(self, test_num: int) -> str:
         if test_num not in range(1, self.config['tests_count'] + 1):
@@ -51,3 +63,6 @@ class Problem:
 
     def get_checker(self) -> str:
         return self._problem_context.checker_path
+
+    def __repr__(self):
+        return f'<Problem #{self.id}>'

@@ -12,11 +12,6 @@ class Tester:
     # FIXME: This is not how it is really work in most cases, but till now it is not the core feature
     TEST_COST = 1
 
-    # FIXME: Timeout is maximal execution time which we give to submission to finish,
-    #  but the problem is some problems may need more or less than standard 1s time.
-    #  It depends on concrete problem configuration.
-    TIMEOUT = 1.0
-
     # FIXME: only linux specific, need to make it crossplatform
     OUTPUT_EATER = '/dev/null'
 
@@ -88,8 +83,8 @@ class Tester:
                                      stdin=open(input_file, 'r'),
                                      stdout=open(output_file, 'w'),
                                      stderr=open(Tester.OUTPUT_EATER, 'w'),
-                                     timeout=Tester.TIMEOUT)
-        except TimeoutError:
+                                     timeout=self.problem.time_limit)
+        except subprocess.TimeoutExpired:
             test_results.verdict = test_results.Verdict.TimeLimitExceeded
             return test_results
 

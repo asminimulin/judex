@@ -54,7 +54,10 @@ def init_archive(test_client):
     app = test_client.application
     submissions = os.path.join(app.instance_path, 'Submissions')
 
-    os.makedirs(submissions)
+    try:
+        shutil.rmtree(submissions)
+    except OSError:
+        pass
 
     yield True
 
