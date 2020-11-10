@@ -1,7 +1,7 @@
 import os
 import logging
 
-from flask import Flask
+from flask import Flask, render_template
 
 from .database import db
 
@@ -31,6 +31,10 @@ def create_app(specific_config=None):
     @app.route('/check')
     def check():
         return f'Instance: {app.instance_path}'
+
+    @app.route('/')
+    def index():
+        return render_template('index.html')
 
     if 'DEBUG' in app.config and app.config['DEBUG']:
         logging.basicConfig(level=logging.DEBUG)
